@@ -3,10 +3,32 @@ import { AppError } from '@/lib/error'
 
 const BASE = '/api/v1'
 
+const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS', 'TRACE'])
+
+function getCSRFToken(): string {
+  const match = document.cookie.match(/(?:^|;\s*)_csrf=([^;]+)/)
+  return match ? decodeURIComponent(match[1]) : ''
+}
+
+async function csrfHeader(): Promise<Record<string, string>> {
+  let token = getCSRFToken()
+  if (!token) {
+    // Prime the _csrf cookie before the first unsafe request.
+    await fetch('/api/csrf', { credentials: 'include' })
+    token = getCSRFToken()
+  }
+  return token ? { 'X-CSRF-Token': token } : {}
+}
+
 async function request<T>(url: string, options?: RequestInit): Promise<T> {
+  const method = (options?.method ?? 'GET').toUpperCase()
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' }
+  if (!SAFE_METHODS.has(method)) {
+    Object.assign(headers, await csrfHeader())
+  }
   const res = await fetch(`${BASE}${url}`, {
     credentials: 'include',
-    headers: { 'Content-Type': 'application/json' },
+    headers,
     ...options,
   })
 

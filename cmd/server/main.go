@@ -62,7 +62,13 @@ func main() {
 		Fields:  map[string]interface{}{"log_type": "access"},
 	}))
 	server.Use(shared.Recovery())
-	server.Use(kern.CORS(cfg.CORSOrigins))
+	server.Use(kern.CORSWithConfig(kern.CORSConfig{
+		AllowOrigins:     cfg.CORSOrigins,
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"},
+		AllowHeaders:     []string{"Content-Type", "Authorization", "X-CSRF-Token"},
+		ExposeHeaders:    []string{"X-Request-ID"},
+		AllowCredentials: true,
+	}))
 	server.Use(middleware.SecurityHeaders(middleware.SecurityHeadersConfig{
 		StrictTransportSecurity: "max-age=31536000; includeSubDomains",
 		ContentSecurityPolicy:   "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'",
@@ -79,6 +85,28 @@ func main() {
 
 	server.Use(middleware.Timeout(middleware.TimeoutConfig{Duration: 30 * time.Second}))
 
+	// Double-submit cookie CSRF. Safe methods (GET/HEAD/OPTIONS/TRACE) are
+	// skipped; the token cookie must be echoed back via X-CSRF-Token on all
+	// unsafe requests. The Stripe webhook is server-to-server and cannot carry
+	// a browser CSRF token, so it is exempt.
+	csrf := middleware.CSRF(middleware.CSRFConfig{
+		CookieName:     "_csrf",
+		HeaderName:     "X-CSRF-Token",
+		CookieSecure:   cfg.SecureCookie,
+		CookieSameSite: http.SameSiteStrictMode,
+		CookieMaxAge:   int((24 * time.Hour).Seconds()),
+		SkipSafe:       true,
+	})
+	server.Use(func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if r.URL.Path == "/api/v1/webhook/stripe" {
+				next.ServeHTTP(w, r)
+				return
+			}
+			csrf(next).ServeHTTP(w, r)
+		})
+	})
+
 	// Health and readiness checks
 	api := server.Group("/api")
 	api.GET("/health", func(c *kern.Context) { _ = c.JSON(http.StatusOK, map[string]string{"status": "ok"}) })
@@ -89,6 +117,13 @@ func main() {
 			return
 		}
 		_ = c.JSON(http.StatusOK, map[string]string{"status": "ready"})
+	})
+
+	// CSRF token for the SPA (safe GET — sets/rotates the _csrf cookie and
+	// returns its value so the frontend can echo it via X-CSRF-Token).
+	api.GET("/csrf", func(c *kern.Context) {
+		token, _ := middleware.CSRFTokenFromContext(c.Context())
+		_ = c.JSON(http.StatusOK, map[string]string{"csrf_token": token})
 	})
 
 	// Go runtime + process metrics for the observability stack
