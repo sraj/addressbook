@@ -1,0 +1,2 @@
+-- Full-text search is handled via ILIKE in the application layer.
+-- This migration is a placeholder for future tsvector/tsquery support.

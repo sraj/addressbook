@@ -1,0 +1,46 @@
+# Optional observability stack — merged with the main compose file:
+#
+#   docker compose -f docker-compose.yml -f resources/logging/docker-compose.logging.yml up -d
+#
+# Without this override file the app runs as normal (default Docker logging).
+
+services:
+  openobserve:
+    image: openobserve/openobserve:latest
+    ports:
+      - "5080:5080"
+    environment:
+      ZO_ROOT_USER_EMAIL: admin@example.com
+      ZO_ROOT_USER_PASSWORD: Admin@12345
+    volumes:
+      - oo-data:/data
+
+  fluent-bit:
+    image: cr.fluentbit.io/fluent/fluent-bit:3.2
+    ports:
+      - "24224:24224"
+      - "4318:4318"
+    volumes:
+      - ./resources/logging/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf:ro
+    depends_on:
+      - openobserve
+
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:latest
+    environment:
+      DATA_SOURCE_NAME: "postgresql://addressbook:addressbook@postgres:5432/addressbook?sslmode=disable"
+    depends_on:
+      - postgres
+
+  # Overrides for services defined in the main compose file
+  postgres:
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: "localhost:24224"
+        tag: "postgres"
+    depends_on:
+      - fluent-bit
+
+volumes:
+  oo-data:

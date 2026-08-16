@@ -1,0 +1,10 @@
+.env
+.git
+.github
+.gitignore
+build/
+docs/
+kern-addressbook.db
+Makefile
+node_modules/
+web/node_modules/

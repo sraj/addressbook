@@ -1,0 +1,4 @@
+DROP TRIGGER IF EXISTS contacts_ai;
+DROP TRIGGER IF EXISTS contacts_ad;
+DROP TRIGGER IF EXISTS contacts_au;
+DROP TABLE IF EXISTS contacts_fts;

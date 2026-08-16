@@ -1,0 +1,11 @@
+CREATE TABLE IF NOT EXISTS bookmarks (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL,
+    url TEXT NOT NULL,
+    title TEXT NOT NULL,
+    description TEXT NOT NULL DEFAULT '',
+    favicon_url TEXT NOT NULL DEFAULT '',
+    category TEXT NOT NULL DEFAULT '',
+    created_at TEXT NOT NULL DEFAULT (CURRENT_TIMESTAMP),
+    updated_at TEXT NOT NULL DEFAULT (CURRENT_TIMESTAMP)
+);
