@@ -5,18 +5,20 @@ const BASE = '/api/v1'
 
 const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS', 'TRACE'])
 
-function getCSRFToken(): string {
-  const match = document.cookie.match(/(?:^|;\s*)_csrf=([^;]+)/)
-  return match ? decodeURIComponent(match[1]) : ''
+let csrfToken: string | null = null
+
+async function getCSRFToken(): Promise<string> {
+  if (csrfToken) return csrfToken
+  const res = await fetch('/api/csrf', { credentials: 'include' })
+  if (res.ok) {
+    const body = await res.json().catch(() => ({}))
+    csrfToken = body.csrf_token || null
+  }
+  return csrfToken ?? ''
 }
 
 async function csrfHeader(): Promise<Record<string, string>> {
-  let token = getCSRFToken()
-  if (!token) {
-    // Prime the _csrf cookie before the first unsafe request.
-    await fetch('/api/csrf', { credentials: 'include' })
-    token = getCSRFToken()
-  }
+  const token = await getCSRFToken()
   return token ? { 'X-CSRF-Token': token } : {}
 }
 
