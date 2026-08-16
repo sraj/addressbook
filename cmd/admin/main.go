@@ -39,7 +39,7 @@ func main() {
 				Usage: "Run database migrations",
 				Action: func(c *cli.Context) error {
 					db := openDB(cfg.DatabaseDriver, cfg.DatabasePath)
-					defer db.Close()
+					defer func() { _ = db.Close() }()
 					if err := migrations.MigrateUp(db, cfg.DatabaseDriver); err != nil {
 						slogger.Error("migration failed", "error", err, "msg", err.Error())
 						return err
@@ -53,7 +53,7 @@ func main() {
 				Usage: "Roll back all migrations",
 				Action: func(c *cli.Context) error {
 					db := openDB(cfg.DatabaseDriver, cfg.DatabasePath)
-					defer db.Close()
+					defer func() { _ = db.Close() }()
 					if err := migrations.MigrateDown(db, cfg.DatabaseDriver); err != nil {
 						slogger.Error("rollback failed", "error", err)
 						return err
@@ -68,7 +68,7 @@ func main() {
 				Action: func(c *cli.Context) error {
 					ctx := context.Background()
 					db := openDB(cfg.DatabaseDriver, cfg.DatabasePath)
-					defer db.Close()
+					defer func() { _ = db.Close() }()
 
 					if err := authInfra.Seed(ctx, db); err != nil {
 						slogger.Error("auth seed failed", "error", err)
@@ -91,7 +91,7 @@ func main() {
 				Action: func(c *cli.Context) error {
 					ctx := context.Background()
 					db := openDB(cfg.DatabaseDriver, cfg.DatabasePath)
-					defer db.Close()
+					defer func() { _ = db.Close() }()
 
 					if err := migrations.MigrateUp(db, cfg.DatabaseDriver); err != nil {
 						slogger.Error("migration failed", "error", err, "msg", err.Error())
@@ -123,7 +123,7 @@ func main() {
 						return err
 					}
 					db := openDB(cfg.DatabaseDriver, cfg.DatabasePath)
-					defer db.Close()
+					defer func() { _ = db.Close() }()
 					if err := migrations.MigrateUp(db, cfg.DatabaseDriver); err != nil {
 						slogger.Error("migration failed", "error", err, "msg", err.Error())
 						return err
@@ -171,7 +171,7 @@ func dropRecreateDB(driver, dsn string) error {
 		if err != nil {
 			return err
 		}
-		defer conn.Close()
+		defer func() { _ = conn.Close() }()
 
 		if _, err := conn.Exec("SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = $1 AND pid <> pg_backend_pid()", dbName); err != nil {
 			return fmt.Errorf("terminate connections: %w", err)

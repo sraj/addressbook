@@ -38,7 +38,7 @@ func EnrichURL(rawURL string) (*EnrichedData, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	// Limit reading to 1MB
 	body, err := io.ReadAll(io.LimitReader(resp.Body, 1<<20))

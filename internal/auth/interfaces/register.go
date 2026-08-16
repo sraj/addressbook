@@ -33,5 +33,7 @@ func Provide(i do.Injector) {
 	})
 
 	// The auth service doubles as the shared JWT token validator.
-	do.As[*application.Service, shared.TokenValidator](i)
+	if err := do.As[*application.Service, shared.TokenValidator](i); err != nil {
+		panic(err)
+	}
 }

@@ -12,7 +12,7 @@ type Plan struct {
 
 func (p *Plan) Limits() map[string]int {
 	var m map[string]int
-	json.Unmarshal([]byte(p.LimitsJSON), &m)
+	_ = json.Unmarshal([]byte(p.LimitsJSON), &m)
 	return m
 }
 
@@ -30,7 +30,7 @@ type Account struct {
 
 func (a *Account) Usage() map[string]int {
 	var m map[string]int
-	json.Unmarshal([]byte(a.UsageJSON), &m)
+	_ = json.Unmarshal([]byte(a.UsageJSON), &m)
 	return m
 }
 

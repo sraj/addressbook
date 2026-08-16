@@ -79,7 +79,9 @@ func (h *Handler) handleCheckoutCompleted(ctx context.Context, event stripe.Even
 	}
 
 	if session.Customer != nil && account.StripeCustomerID == "" {
-		h.svc.SetStripeCustomerID(ctx, account.ID, session.Customer.ID)
+		if err := h.svc.SetStripeCustomerID(ctx, account.ID, session.Customer.ID); err != nil {
+			slog.Error("failed to save stripe customer", "account_id", account.ID, "error", err)
+		}
 	}
 
 	// Determine which plan was purchased
@@ -150,7 +152,10 @@ func (h *Handler) handleSubscriptionUpdated(ctx context.Context, event stripe.Ev
 			for _, p := range plans {
 				if p.StripePriceID == priceID {
 					if p.ID != account.PlanID {
-						h.svc.SetPlan(ctx, account.ID, p.ID)
+						if err := h.svc.SetPlan(ctx, account.ID, p.ID); err != nil {
+							slog.Error("failed to sync plan", "account_id", account.ID, "plan", p.Name, "error", err)
+							return
+						}
 						slog.Info("plan synced from Stripe", "account_id", account.ID, "plan", p.Name)
 					}
 					break

@@ -13,7 +13,7 @@ require (
 	github.com/mobentum/kern/extensions/xlog v1.0.0
 	github.com/mobentum/kern/extensions/xotel v1.0.3
 	github.com/mobentum/kern/extensions/xvalidator v1.0.0
-	github.com/mobentum/xdb v0.4.3
+	github.com/mobentum/xdb v0.5.0
 	github.com/prometheus/client_golang v1.24.1
 	github.com/samber/do/v2 v2.1.0
 	github.com/stripe/stripe-go/v79 v79.12.0

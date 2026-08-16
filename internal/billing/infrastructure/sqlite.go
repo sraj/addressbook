@@ -131,13 +131,6 @@ type accountModel struct {
 	CreatedAt        string `db:"created_at"`
 }
 
-type memberModel struct {
-	ID        uint   `db:"id"`
-	AccountID uint   `db:"account_id"`
-	UserID    uint   `db:"user_id"`
-	Role      string `db:"role"`
-}
-
 type subscriptionModel struct {
 	ID                   uint    `db:"id"`
 	AccountID            uint    `db:"account_id"`
