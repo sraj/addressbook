@@ -6,14 +6,14 @@ import (
 	"os"
 	"time"
 
-	"github.com/sraj/addressbook/internal/app"
-	"github.com/sraj/addressbook/internal/config"
-	"github.com/sraj/addressbook/internal/shared"
-	"github.com/sraj/addressbook/migrations"
 	"github.com/mobentum/kern"
 	"github.com/mobentum/kern/extensions/xlog"
 	"github.com/mobentum/kern/extensions/xotel"
 	"github.com/mobentum/kern/middleware"
+	"github.com/sraj/addressbook/internal/app"
+	"github.com/sraj/addressbook/internal/config"
+	"github.com/sraj/addressbook/internal/shared"
+	"github.com/sraj/addressbook/migrations"
 )
 
 func main() {
@@ -122,7 +122,7 @@ func main() {
 
 	// CSRF token for the SPA (safe GET — sets/rotates the _csrf cookie and
 	// returns its value so the frontend can echo it via X-CSRF-Token).
-	api.GET("/csrf", func(c *kern.Context) {
+	api.GET("/v1/csrf", func(c *kern.Context) {
 		token, _ := middleware.CSRFTokenFromContext(c.Context())
 		_ = c.JSON(http.StatusOK, map[string]string{"csrf_token": token})
 	})

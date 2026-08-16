@@ -9,7 +9,7 @@ let csrfToken: string | null = null
 
 async function getCSRFToken(): Promise<string> {
   if (csrfToken) return csrfToken
-  const res = await fetch('/api/csrf', { credentials: 'include' })
+  const res = await fetch(`${BASE}/csrf`, { credentials: 'include' })
   if (res.ok) {
     const body = await res.json().catch(() => ({}))
     csrfToken = body.csrf_token || null
