@@ -93,6 +93,7 @@ func main() {
 		CookieName:     "_csrf",
 		HeaderName:     "X-CSRF-Token",
 		CookieSecure:   cfg.SecureCookie,
+		CookieHTTPOnly: true,
 		CookieSameSite: http.SameSiteStrictMode,
 		CookieMaxAge:   int((24 * time.Hour).Seconds()),
 		SkipSafe:       true,
