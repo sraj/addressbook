@@ -23,6 +23,7 @@ type Config struct {
 	StripeSecretKey   string
 	StripeWebhookKey  string
 	OTLPEndpoint      string
+	EnableOTLP         bool
 }
 
 func Load() (*Config, error) {
@@ -54,6 +55,10 @@ func Load() (*Config, error) {
 		AppURL:            loader.String("APP_URL", "http://localhost:5173"),
 		StripeSecretKey:   loader.String("STRIPE_SECRET_KEY", ""),
 		StripeWebhookKey:  loader.String("STRIPE_WEBHOOK_SECRET", ""),
+		EnableOTLP:        func() bool {
+			v, _ := loader.Bool("ENABLE_OTLP", false)
+			return v
+		}(),
 		OTLPEndpoint:      loader.String("OTLP_ENDPOINT", "localhost:4318"),
 	}, nil
 }

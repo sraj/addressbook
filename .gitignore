@@ -5,6 +5,7 @@
 *.dylib
 *.test
 *.out
+*.db
 *.DS_Store
 go.work
 go.work.sum

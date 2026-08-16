@@ -23,7 +23,7 @@ help:
 	@echo "  make clean         remove build artifacts"
 
 setup:
-	go run ./cmd/admin/ setup
+	go run -tags sqlite_fts5 ./cmd/admin/ setup
 
 server:
 	go run -tags sqlite_fts5 ./cmd/server/
