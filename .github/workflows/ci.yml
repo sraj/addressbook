@@ -30,10 +30,10 @@ jobs:
           version: v2.12.2
 
       - name: Build
-        run: go build -mod=vendor -tags sqlite_fts5 ./...
+        run: go build -tags sqlite_fts5 ./...
 
       - name: Test
-        run: go test -mod=vendor ./... -count=1
+        run: go test ./... -count=1
 
   frontend:
     runs-on: ubuntu-latest

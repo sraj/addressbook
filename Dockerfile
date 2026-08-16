@@ -13,10 +13,10 @@ ENV GOTOOLCHAIN=auto
 RUN apk add --no-cache gcc musl-dev
 
 WORKDIR /src
-COPY go.mod go.sum vendor/ ./
+COPY go.mod go.sum ./
 COPY . .
-RUN go build -mod=vendor -tags sqlite_fts5 -o /build/server ./cmd/server/ && \
-    go build -mod=vendor -o /build/admin ./cmd/admin/
+RUN go build -tags sqlite_fts5 -o /build/server ./cmd/server/ && \
+    go build -o /build/admin ./cmd/admin/
 
 # ── Runtime stage ──────────────────────────────────────────
 FROM alpine:3.21
