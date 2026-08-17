@@ -19,6 +19,7 @@ interface ContactsState {
   createContact: (data: Parameters<typeof api.createContact>[0]) => Promise<void>
   updateContact: (id: number, data: Parameters<typeof api.updateContact>[1]) => Promise<void>
   deleteContact: (id: number) => Promise<void>
+  moveContact: (id: number, collectionId: number) => Promise<void>
   setSearch: (q: string) => void
   setPage: (page: number) => void
 }
@@ -85,6 +86,11 @@ export const useContactsStore = create<ContactsState>((set, get) => ({
 
   deleteContact: async (id) => {
     await api.deleteContact(id)
+    await get().fetchContacts()
+  },
+
+  moveContact: async (id, collectionId) => {
+    await api.moveContactToCollection(collectionId, id)
     await get().fetchContacts()
   },
 

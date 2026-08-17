@@ -1,7 +1,8 @@
+import { useEffect, useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuthStore } from '@/store/auth'
 import { Button } from '@/components/ui/button'
-import { BookUser, Users, LogOut, Settings, FileText, Bookmark, Shield, User } from 'lucide-react'
+import { BookUser, Users, LogOut, Settings, FileText, Bookmark, Shield, User, Folder, Tag } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
@@ -9,10 +10,23 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   const location = useLocation()
   const user = useAuthStore((s) => s.user)
   const logout = useAuthStore((s) => s.logout)
+  const [showGreeting, setShowGreeting] = useState(true)
+  const [fading, setFading] = useState(false)
+
+  useEffect(() => {
+    const t1 = setTimeout(() => setFading(true), 3500)
+    const t2 = setTimeout(() => setShowGreeting(false), 4200)
+    return () => {
+      clearTimeout(t1)
+      clearTimeout(t2)
+    }
+  }, [])
 
   const isAdmin = user?.role === 'admin'
   const navItems = [
     { icon: Users, label: 'Contacts', path: '/contacts' },
+    { icon: Folder, label: 'Collections', path: '/collections', startsWith: true },
+    { icon: Tag, label: 'Labels', path: '/labels' },
     { icon: FileText, label: 'Notes', path: '/notes' },
     { icon: Bookmark, label: 'Bookmarks', path: '/bookmarks' },
     { icon: Settings, label: 'Settings', path: '/settings' },
@@ -34,7 +48,9 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           {navItems.map((item) => {
             const active = item.path === '/settings'
               ? location.pathname.startsWith('/settings')
-              : location.pathname === item.path
+              : item.startsWith
+                ? location.pathname.startsWith(item.path)
+                : location.pathname === item.path
             return (
               <Button
                 key={item.label}
@@ -97,6 +113,20 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       </aside>
 
       <main className="ml-[76px] flex-1 sm:ml-24">
+        {user?.name && showGreeting && (
+          <div className={`mx-auto w-full max-w-5xl px-4 pt-6 sm:px-6 ${fading ? 'greeting-fade-out' : ''}`}>
+            <div className="mb-4 rounded-lg border border-primary/20 bg-primary/5 p-3.5">
+              <div className="flex items-center gap-2.5">
+                <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-primary/10">
+                  <BookUser className="h-4 w-4 text-primary" />
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Hello, <span className="font-semibold text-foreground">{user.name}</span> — welcome back
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
         {children}
       </main>
     </div>

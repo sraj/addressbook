@@ -4,6 +4,15 @@
 @plugin "tailwindcss-animate";
 @plugin "@tailwindcss/typography";
 
+@keyframes greeting-fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+.greeting-fade-out {
+  animation: greeting-fade-out 0.6s ease-in forwards;
+}
+
 /* @custom-variant dark (&:is(.dark *)); */
 
 @theme inline {

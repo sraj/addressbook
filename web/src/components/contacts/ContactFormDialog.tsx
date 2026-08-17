@@ -12,9 +12,11 @@ import {
 } from '@/components/ui/select'
 import { toast } from '@/hooks/use-toast'
 import { handleFieldErrors, showErrorToast } from '@/lib/error'
+import { api } from '@/lib/api'
 import { Mail, Phone, MapPin, X } from 'lucide-react'
 import { contactSchema } from '@/lib/schemas'
 import { useContactsStore } from '@/store/contacts'
+import { useCollectionsStore } from '@/store/collections'
 import type { Contact } from '@/types'
 import type { z } from 'zod'
 
@@ -70,10 +72,12 @@ interface Props {
   open: boolean
   onOpenChange: (open: boolean) => void
   editingContact: Contact | null
+  collectionId?: number
 }
 
-export default function ContactFormDialog({ open, onOpenChange, editingContact }: Props) {
+export default function ContactFormDialog({ open, onOpenChange, editingContact, collectionId }: Props) {
   const { createContact, updateContact } = useContactsStore()
+  const fetchCollections = useCollectionsStore((s) => s.fetchCollections)
   const [form, setForm] = useState<FormData>(emptyForm())
   const [saving, setSaving] = useState(false)
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
@@ -165,6 +169,10 @@ export default function ContactFormDialog({ open, onOpenChange, editingContact }
       if (editingContact) {
         await updateContact(editingContact.id, payload)
         toast({ title: 'Contact updated', variant: 'success' })
+      } else if (collectionId) {
+        await api.addCollectionContact(collectionId, payload)
+        await fetchCollections()
+        toast({ title: 'Contact added to collection', variant: 'success' })
       } else {
         await createContact(payload)
         toast({ title: 'Contact created', variant: 'success' })
@@ -278,7 +286,7 @@ export default function ContactFormDialog({ open, onOpenChange, editingContact }
                     </Button>
                   )}
                 </div>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                   <div className="col-span-2">
                     <Select value={addr.label} onValueChange={(value) => updateAddress(i, 'label', value)}>
                       <SelectTrigger>

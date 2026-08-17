@@ -16,16 +16,22 @@ interface DeleteDialogProps {
   label: string
   deleting: boolean
   onConfirm: () => void
+  description?: React.ReactNode
+  confirmLabel?: string
 }
 
-export default function DeleteDialog({ open, onOpenChange, title, label, deleting, onConfirm }: DeleteDialogProps) {
+export default function DeleteDialog({ open, onOpenChange, title, label, deleting, onConfirm, description, confirmLabel = 'Delete' }: DeleteDialogProps) {
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>{title}</AlertDialogTitle>
           <AlertDialogDescription>
-            Are you sure you want to delete <strong>{label}</strong>? This action cannot be undone.
+            {description ?? (
+              <>
+                Are you sure you want to delete <strong>{label}</strong>? This action cannot be undone.
+              </>
+            )}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
@@ -35,7 +41,7 @@ export default function DeleteDialog({ open, onOpenChange, title, label, deletin
             onClick={onConfirm}
             disabled={deleting}
           >
-            {deleting ? 'Deleting…' : 'Delete'}
+            {deleting ? 'Deleting…' : confirmLabel}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

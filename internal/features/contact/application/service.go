@@ -16,18 +16,19 @@ func NewService(repo domain.Repository, billing quotaChecker) *Service {
 	return &Service{repo: repo, billing: billing}
 }
 
-func (s *Service) Create(ctx context.Context, userID uint, name string, emails, phones []string, addresses []domain.Address, notes string) (*domain.Contact, error) {
+func (s *Service) Create(ctx context.Context, userID, collectionID uint, name string, emails, phones []string, addresses []domain.Address, notes string) (*domain.Contact, error) {
 	if err := s.billing.CheckQuota(ctx, userID, "contacts"); err != nil {
 		return nil, err
 	}
 
 	contact := &domain.Contact{
-		UserID:    userID,
-		Name:      name,
-		Emails:    emails,
-		Phones:    phones,
-		Addresses: addresses,
-		Notes:     notes,
+		UserID:       userID,
+		CollectionID: collectionID,
+		Name:         name,
+		Emails:       emails,
+		Phones:       phones,
+		Addresses:    addresses,
+		Notes:        notes,
 	}
 	if err := s.repo.Create(ctx, contact); err != nil {
 		return nil, err
@@ -97,4 +98,43 @@ func (s *Service) List(ctx context.Context, userID uint, query string, page, siz
 		return s.repo.Search(ctx, userID, query, page, size)
 	}
 	return s.repo.ListByUser(ctx, userID, page, size)
+}
+
+func (s *Service) ListByCollection(ctx context.Context, userID, collectionID uint, page, size int) ([]domain.Contact, int64, error) {
+	if page < 1 {
+		page = 1
+	}
+	if size < 1 || size > 100 {
+		size = 20
+	}
+	return s.repo.ListByCollection(ctx, userID, collectionID, page, size)
+}
+
+// SetCollection moves a contact into (or out of) a collection. The ownership
+// guard lives in the repository WHERE clause; a missing/misowned contact
+// surfaces as domain.ErrContactNotFound.
+func (s *Service) SetCollection(ctx context.Context, id, userID, collectionID uint) error {
+	return s.repo.SetCollection(ctx, id, userID, collectionID)
+}
+
+func (s *Service) ListAllByUser(ctx context.Context, userID, collectionID uint) ([]domain.Contact, error) {
+	return s.repo.ListAllByUser(ctx, userID, collectionID)
+}
+
+// Export renders all matching contacts in the requested format ("csv"|"xlsx").
+// Returns the file bytes and an HTTP content type.
+func (s *Service) Export(ctx context.Context, userID, collectionID uint, format string) ([]byte, string, error) {
+	contacts, err := s.repo.ListAllByUser(ctx, userID, collectionID)
+	if err != nil {
+		return nil, "", err
+	}
+
+	switch format {
+	case "xlsx":
+		data, err := ExportXLSX(contacts)
+		return data, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", err
+	default:
+		data, err := ExportCSV(contacts)
+		return data, "text/csv; charset=utf-8", err
+	}
 }

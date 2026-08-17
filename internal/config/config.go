@@ -8,22 +8,25 @@ import (
 )
 
 type Config struct {
-	DatabaseDriver    string
-	DatabasePath      string
-	Addr              string
-	JWTSecret         string
-	CORSOrigins       []string
-	SecureCookie      bool
-	MailProvider      string
-	MailAPIKey        string
-	MailDomain        string
-	MailFrom          string
-	MailFromName      string
-	AppURL            string
-	StripeSecretKey   string
-	StripeWebhookKey  string
-	OTLPEndpoint      string
-	EnableOTLP         bool
+	DatabaseDriver      string
+	DatabasePath        string
+	Addr                string
+	JWTSecret           string
+	CORSOrigins         []string
+	SecureCookie        bool
+	MailProvider        string
+	MailAPIKey          string
+	MailDomain          string
+	MailFrom            string
+	MailFromName        string
+	AppURL              string
+	StripeSecretKey     string
+	StripeWebhookKey    string
+	OTLPEndpoint        string
+	EnableOTLP          bool
+	LabelPriceCents     int64
+	LabelCurrency       string
+	LabelLabelsPerSheet int
 }
 
 func Load() (*Config, error) {
@@ -47,18 +50,27 @@ func Load() (*Config, error) {
 			v, _ := loader.Bool("SECURE_COOKIE", false)
 			return v
 		}(),
-		MailProvider: loader.String("MAIL_PROVIDER", ""),
-		MailAPIKey:   loader.String("MAIL_API_KEY", ""),
-		MailDomain:   loader.String("MAIL_DOMAIN", ""),
-		MailFrom:     loader.String("MAIL_FROM", "noreply@addressbook.app"),
-		MailFromName: loader.String("MAIL_FROM_NAME", "Address Book"),
-		AppURL:            loader.String("APP_URL", "http://localhost:5173"),
-		StripeSecretKey:   loader.String("STRIPE_SECRET_KEY", ""),
-		StripeWebhookKey:  loader.String("STRIPE_WEBHOOK_SECRET", ""),
-		EnableOTLP:        func() bool {
+		MailProvider:     loader.String("MAIL_PROVIDER", ""),
+		MailAPIKey:       loader.String("MAIL_API_KEY", ""),
+		MailDomain:       loader.String("MAIL_DOMAIN", ""),
+		MailFrom:         loader.String("MAIL_FROM", "noreply@addressbook.app"),
+		MailFromName:     loader.String("MAIL_FROM_NAME", "Address Book"),
+		AppURL:           loader.String("APP_URL", "http://localhost:5173"),
+		StripeSecretKey:  loader.String("STRIPE_SECRET_KEY", ""),
+		StripeWebhookKey: loader.String("STRIPE_WEBHOOK_SECRET", ""),
+		EnableOTLP: func() bool {
 			v, _ := loader.Bool("ENABLE_OTLP", false)
 			return v
 		}(),
-		OTLPEndpoint:      loader.String("OTLP_ENDPOINT", "localhost:4318"),
+		OTLPEndpoint: loader.String("OTLP_ENDPOINT", "localhost:4318"),
+		LabelPriceCents: func() int64 {
+			v, _ := loader.Int("LABEL_PRICE_CENTS", 150)
+			return int64(v)
+		}(),
+		LabelCurrency: loader.String("LABEL_CURRENCY", "usd"),
+		LabelLabelsPerSheet: func() int {
+			v, _ := loader.Int("LABEL_LABELS_PER_SHEET", 30)
+			return v
+		}(),
 	}, nil
 }

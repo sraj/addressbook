@@ -11,8 +11,12 @@ import EmptyState from '@/components/ui/EmptyState'
 import DeleteDialog from '@/components/ui/DeleteDialog'
 import Pagination from '@/components/ui/Pagination'
 import { toast } from '@/hooks/use-toast'
-import { Plus, Search, Pencil, Trash2, User } from 'lucide-react'
+import { Plus, Search, Pencil, Trash2, User, Upload, Download, FolderInput } from 'lucide-react'
 import ContactFormDialog from '@/components/contacts/ContactFormDialog'
+import MoveContactDialog from '@/components/collections/MoveContactDialog'
+import { api } from '@/lib/api'
+import { showErrorToast } from '@/lib/error'
+import { useCollectionsStore } from '@/store/collections'
 import type { Contact } from '@/types'
 
 export default function ContactsPage() {
@@ -39,6 +43,23 @@ export default function ContactsPage() {
   const [deleteTarget, setDeleteTarget] = useState<Contact | null>(null)
   const [deleting, setDeleting] = useState(false)
 
+  const [importing, setImporting] = useState(false)
+  const [exporting, setExporting] = useState(false)
+
+  const [moveTarget, setMoveTarget] = useState<Contact | null>(null)
+
+  const collections = useCollectionsStore((s) => s.collections)
+  const fetchCollections = useCollectionsStore((s) => s.fetchCollections)
+
+  useEffect(() => {
+    fetchCollections()
+  }, [])
+
+  const collectionName = (id?: number) => {
+    if (!id) return '—'
+    return collections.find((c) => c.id === id)?.name ?? '—'
+  }
+
   useEffect(() => {
     fetchContacts()
     return () => {
@@ -57,6 +78,30 @@ export default function ContactsPage() {
   const openCreate = () => {
     setEditingContact(null)
     setShowForm(true)
+  }
+
+  const handleImport = async (file: File, format: 'csv' | 'xlsx') => {
+    setImporting(true)
+    try {
+      const res = await api.importContacts(file, format)
+      toast({ title: `Imported ${res.imported} contacts${res.skipped ? ` (${res.skipped} skipped)` : ''}`, variant: 'success' })
+      await fetchContacts({ page: 1 })
+    } catch (err) {
+      showErrorToast(err, 'Import failed')
+    } finally {
+      setImporting(false)
+    }
+  }
+
+  const handleExport = async (format: 'csv' | 'xlsx') => {
+    setExporting(true)
+    try {
+      await api.exportContacts(format)
+    } catch (err) {
+      showErrorToast(err, 'Export failed')
+    } finally {
+      setExporting(false)
+    }
   }
 
   const openEdit = (contact: Contact) => {
@@ -85,10 +130,37 @@ export default function ContactsPage() {
         title="Contacts"
         description="Manage your contacts"
         action={
-          <Button onClick={openCreate}>
-            <Plus className="h-4 w-4" />
-            Add Contact
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            <label className="inline-flex">
+              <Button variant="outline" asChild disabled={importing}>
+                <span>
+                  <Upload className="h-4 w-4" />
+                  Import
+                </span>
+              </Button>
+              <input
+                type="file"
+                accept=".csv,.xlsx"
+                className="hidden"
+                onChange={(e) => {
+                  const f = e.target.files?.[0]
+                  if (f) {
+                    const format = f.name.toLowerCase().endsWith('.xlsx') ? 'xlsx' : 'csv'
+                    handleImport(f, format)
+                  }
+                  e.target.value = ''
+                }}
+              />
+            </label>
+            <Button variant="outline" onClick={() => handleExport('csv')} disabled={exporting}>
+              <Download className="h-4 w-4" />
+              Export
+            </Button>
+            <Button onClick={openCreate}>
+              <Plus className="h-4 w-4" />
+              Add Contact
+            </Button>
+          </div>
         }
       />
 
@@ -128,6 +200,7 @@ export default function ContactsPage() {
                     <TableHead className="hidden sm:table-cell">Email</TableHead>
                     <TableHead className="hidden md:table-cell">Phone</TableHead>
                     <TableHead className="hidden lg:table-cell">Address</TableHead>
+                    <TableHead className="hidden xl:table-cell">Collection</TableHead>
                     <TableHead className="w-[80px] text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -150,8 +223,14 @@ export default function ContactsPage() {
                       <TableCell className="hidden lg:table-cell text-muted-foreground max-w-[200px] truncate">
                         {contact.addresses[0]?.line1}, {contact.addresses[0]?.city}
                       </TableCell>
+                      <TableCell className="hidden xl:table-cell text-muted-foreground max-w-[120px] truncate">
+                        {collectionName(contact.collection_id)}
+                      </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-1">
+                          <Button variant="ghost" size="icon" title="Move to collection" onClick={() => setMoveTarget(contact)}>
+                            <FolderInput className="h-4 w-4" />
+                          </Button>
                           <Button variant="ghost" size="icon" onClick={() => openEdit(contact)}>
                             <Pencil className="h-4 w-4" />
                           </Button>
@@ -176,6 +255,13 @@ export default function ContactsPage() {
         open={showForm}
         onOpenChange={setShowForm}
         editingContact={editingContact}
+      />
+
+      <MoveContactDialog
+        open={!!moveTarget}
+        onOpenChange={(open) => !open && setMoveTarget(null)}
+        contact={moveTarget ?? ({} as Contact)}
+        onMoved={() => fetchContacts()}
       />
 
       <DeleteDialog

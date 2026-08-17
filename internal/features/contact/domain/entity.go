@@ -11,11 +11,12 @@ type Address struct {
 }
 
 type Contact struct {
-	ID        uint      `json:"id"`
-	UserID    uint      `json:"user_id"`
-	Name      string    `json:"name"`
-	Emails    []string  `json:"emails"`
-	Phones    []string  `json:"phones"`
-	Addresses []Address `json:"addresses"`
-	Notes     string    `json:"notes"`
+	ID           uint      `json:"id"`
+	UserID       uint      `json:"user_id"`
+	CollectionID uint      `json:"collection_id,omitempty"`
+	Name         string    `json:"name"`
+	Emails       []string  `json:"emails"`
+	Phones       []string  `json:"phones"`
+	Addresses    []Address `json:"addresses"`
+	Notes        string    `json:"notes"`
 }

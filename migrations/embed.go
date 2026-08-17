@@ -25,6 +25,7 @@ var Contexts = []Context{
 	{Name: "note", Table: "schema_migrations_note"},
 	{Name: "bookmark", Table: "schema_migrations_bookmark"},
 	{Name: "billing", Table: "schema_migrations_billing"},
+	{Name: "collection", Table: "schema_migrations_collection"},
 }
 
 //go:embed sqlite

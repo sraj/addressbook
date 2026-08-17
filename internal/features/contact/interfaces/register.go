@@ -1,11 +1,11 @@
 package interfaces
 
 import (
+	"github.com/mobentum/xdb"
+	"github.com/samber/do/v2"
 	billingApp "github.com/sraj/addressbook/internal/billing/application"
 	"github.com/sraj/addressbook/internal/features/contact/application"
 	"github.com/sraj/addressbook/internal/features/contact/infrastructure"
-	"github.com/mobentum/xdb"
-	"github.com/samber/do/v2"
 )
 
 // Provide registers the contact service and handler into the injector.

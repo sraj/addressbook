@@ -1,0 +1,1 @@
+ALTER TABLE label_orders ADD COLUMN label_type TEXT NOT NULL DEFAULT '5160';

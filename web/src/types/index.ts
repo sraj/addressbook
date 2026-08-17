@@ -11,6 +11,7 @@ export interface Address {
 export interface Contact {
   id: number
   user_id: number
+  collection_id?: number
   name: string
   emails: string[]
   phones: string[]
@@ -18,6 +19,41 @@ export interface Contact {
   notes: string
   created_at: string
   updated_at: string
+}
+
+export interface Collection {
+  id: number
+  user_id: number
+  name: string
+  invite_token: string
+  contact_count?: number
+  created_at?: string
+  updated_at?: string
+}
+
+export interface LabelFormat {
+  code: string
+  name: string
+  width: string
+  height: string
+  columns: number
+  rows: number
+  font_size_px: number
+  cell_padding: string
+}
+
+export interface LabelOrder {
+  id: number
+  user_id: number
+  collection_id?: number
+  contact_count: number
+  sheet_count: number
+  amount_cents: number
+  currency: string
+  status: 'pending' | 'paid' | 'canceled'
+  label_type?: string
+  stripe_session_id?: string
+  created_at?: string
 }
 
 export interface PaginatedResponse<T> {

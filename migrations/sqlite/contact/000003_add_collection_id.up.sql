@@ -1,0 +1,1 @@
+ALTER TABLE contacts ADD COLUMN collection_id INTEGER NOT NULL DEFAULT 0;

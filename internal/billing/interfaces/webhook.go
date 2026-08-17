@@ -64,6 +64,21 @@ func (h *Handler) handleCheckoutCompleted(ctx context.Context, event stripe.Even
 		return
 	}
 
+	// One-time label order checkouts carry order_type metadata and are not
+	// subscription upgrades.
+	if session.Metadata["order_type"] == "labels" {
+		if h.labelOrders == nil {
+			slog.Error("label order updater not wired, skipping order confirmation", "session", session.ID)
+			return
+		}
+		if err := h.labelOrders.MarkOrderPaidBySessionID(ctx, session.ID); err != nil {
+			slog.Error("failed to confirm label order", "session", session.ID, "error", err)
+			return
+		}
+		slog.Info("label order paid", "session", session.ID)
+		return
+	}
+
 	accountIDStr := session.Metadata["account_id"]
 
 	var accountID uint

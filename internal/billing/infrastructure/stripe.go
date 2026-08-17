@@ -200,6 +200,54 @@ func (s *StripeService) ListInvoices(ctx context.Context, customerID string) ([]
 	return result, it.Err()
 }
 
+// CreateOneTimeCheckoutSession creates a one-time payment checkout session
+// (e.g. printed address labels). Returns the redirect URL and session ID.
+func (s *StripeService) CreateOneTimeCheckoutSession(ctx context.Context, userEmail string, unitAmount int64, currency, productName string, quantity int64, metadata map[string]string) (string, string, error) {
+	if s == nil {
+		return "", "", errors.New("stripe not configured")
+	}
+	params := &stripe.CheckoutSessionParams{
+		Mode:       stripe.String(string(stripe.CheckoutSessionModePayment)),
+		SuccessURL: stripe.String(s.appURL + "/labels?status=success"),
+		CancelURL:  stripe.String(s.appURL + "/labels"),
+		Metadata:   metadata,
+		LineItems: []*stripe.CheckoutSessionLineItemParams{
+			{
+				Quantity: stripe.Int64(quantity),
+				PriceData: &stripe.CheckoutSessionLineItemPriceDataParams{
+					Currency:   stripe.String(currency),
+					UnitAmount: stripe.Int64(unitAmount),
+					ProductData: &stripe.CheckoutSessionLineItemPriceDataProductDataParams{
+						Name: stripe.String(productName),
+					},
+				},
+			},
+		},
+	}
+	if userEmail != "" {
+		params.CustomerEmail = stripe.String(userEmail)
+	}
+
+	sess, err := session.New(params)
+	if err != nil {
+		return "", "", fmt.Errorf("create one-time checkout session: %w", err)
+	}
+	return sess.URL, sess.ID, nil
+}
+
+// GetCheckoutSession retrieves a checkout session's status (used to confirm
+// whether a label order was paid).
+func (s *StripeService) GetCheckoutSession(ctx context.Context, sessionID string) (string, error) {
+	if s == nil {
+		return "", errors.New("stripe not configured")
+	}
+	sess, err := session.Get(sessionID, nil)
+	if err != nil {
+		return "", fmt.Errorf("get checkout session: %w", err)
+	}
+	return string(sess.PaymentStatus), nil
+}
+
 // VerifyWebhook validates a Stripe webhook signature and returns the parsed event.
 // Uses IgnoreAPIVersionMismatch to handle version differences between Stripe CLI and SDK.
 func (s *StripeService) VerifyWebhook(payload []byte, sigHeader string) (stripe.Event, error) {

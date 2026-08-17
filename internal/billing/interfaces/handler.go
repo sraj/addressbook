@@ -10,14 +10,15 @@ import (
 )
 
 type Handler struct {
-	svc    billingService
-	stripe stripeChecker
-	mailer mailSender
-	appURL string
+	svc         billingService
+	stripe      stripeChecker
+	mailer      mailSender
+	appURL      string
+	labelOrders labelOrderUpdater
 }
 
-func NewHandler(svc billingService, stripe stripeChecker, mailer mailSender, appURL string) *Handler {
-	return &Handler{svc: svc, stripe: stripe, mailer: mailer, appURL: appURL}
+func NewHandler(svc billingService, stripe stripeChecker, mailer mailSender, appURL string, labelOrders labelOrderUpdater) *Handler {
+	return &Handler{svc: svc, stripe: stripe, mailer: mailer, appURL: appURL, labelOrders: labelOrders}
 }
 
 type UsageResponse struct {

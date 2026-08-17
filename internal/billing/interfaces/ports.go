@@ -40,3 +40,9 @@ type stripeChecker interface {
 type mailSender interface {
 	Send(to, subject, body string) error
 }
+
+// labelOrderUpdater is satisfied by *label/application.Service and is only
+// wired when the label feature is available (always, in this app).
+type labelOrderUpdater interface {
+	MarkOrderPaidBySessionID(ctx context.Context, sessionID string) error
+}

@@ -1,12 +1,13 @@
 package interfaces
 
 import (
+	"github.com/mobentum/xdb"
+	"github.com/samber/do/v2"
 	"github.com/sraj/addressbook/internal/billing/application"
 	"github.com/sraj/addressbook/internal/billing/infrastructure"
 	"github.com/sraj/addressbook/internal/config"
+	labelApp "github.com/sraj/addressbook/internal/features/label/application"
 	"github.com/sraj/addressbook/internal/mailer"
-	"github.com/mobentum/xdb"
-	"github.com/samber/do/v2"
 )
 
 // Provide registers the billing service and handler into the injector.
@@ -31,6 +32,11 @@ func Provide(i do.Injector) {
 			m = v
 		}
 
-		return NewHandler(svc, stripe, m, cfg.AppURL), nil
+		var labelOrders labelOrderUpdater
+		if v, err := do.Invoke[*labelApp.Service](i); err == nil {
+			labelOrders = v
+		}
+
+		return NewHandler(svc, stripe, m, cfg.AppURL, labelOrders), nil
 	})
 }

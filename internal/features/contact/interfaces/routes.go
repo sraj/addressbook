@@ -13,4 +13,6 @@ func (h *Handler) RegisterRoutes(app *kern.App, jwtAuth kern.MiddlewareFunc) {
 	g.GET("/{id}", h.Get)
 	g.AddConstraints("PUT", "/{id}", kern.Constraints{Validate: xvalidator.BodyValidator[application.UpdateRequest]()}, h.Update)
 	g.DELETE("/{id}", h.Delete)
+	g.POST("/import", h.Import)
+	g.GET("/export", h.Export)
 }

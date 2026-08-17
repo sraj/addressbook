@@ -67,6 +67,41 @@ func (s *Service) DecrementUsage(ctx context.Context, userID uint, resource stri
 	return s.repo.DecrementUsage(ctx, account.ID, resource)
 }
 
+// RemainingQuota returns the number of resources the user can still create
+// for the given resource, or -1 if unlimited. Admins are always unlimited.
+func (s *Service) RemainingQuota(ctx context.Context, userID uint, resource string) (int, error) {
+	role, err := s.repo.GetUserRole(ctx, userID)
+	if err == nil && role == "admin" {
+		return -1, nil
+	}
+
+	account, err := s.repo.GetAccountByUser(ctx, userID)
+	if err != nil {
+		return 0, err
+	}
+
+	plan, err := s.repo.GetPlan(ctx, account.PlanID)
+	if err != nil {
+		return 0, err
+	}
+
+	quota := plan.Quota(resource)
+	if quota == -1 {
+		return -1, nil
+	}
+
+	usage, err := s.repo.GetUsage(ctx, account.ID)
+	if err != nil {
+		return 0, err
+	}
+
+	remaining := quota - usage[resource]
+	if remaining < 0 {
+		remaining = 0
+	}
+	return remaining, nil
+}
+
 // GetUsage returns the user's current resource usage and their plan details.
 func (s *Service) GetUsage(ctx context.Context, userID uint) (map[string]int, *domain.Plan, error) {
 	account, err := s.repo.GetAccountByUser(ctx, userID)

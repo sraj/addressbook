@@ -10,6 +10,10 @@ import ResetPasswordPage from '@/pages/ResetPasswordPage'
 import ContactsPage from '@/pages/ContactsPage'
 import NotesPage from '@/pages/NotesPage'
 import BookmarksPage from '@/pages/BookmarksPage'
+import CollectionsPage from '@/pages/CollectionsPage'
+import CollectionDetailPage from '@/pages/CollectionDetailPage'
+import InvitePage from '@/pages/InvitePage'
+import LabelsPage from '@/pages/LabelsPage'
 import AdminPage from '@/pages/AdminPage'
 import ProfilePage from '@/pages/ProfilePage'
 import SettingsPage from '@/pages/SettingsPage'
@@ -35,7 +39,7 @@ export default function App() {
   const checkAuth = useAuthStore((s) => s.checkAuth)
 
   const publicPaths = ['/login', '/register', '/forgot-password', '/reset-password']
-  const isPublicRoute = publicPaths.includes(location.pathname)
+  const isPublicRoute = publicPaths.includes(location.pathname) || location.pathname.startsWith('/invite/')
 
   useEffect(() => {
     if (!initialized && !isPublicRoute) {
@@ -59,6 +63,9 @@ export default function App() {
       </Route>
       <Route element={<ProtectedRoute><Outlet /></ProtectedRoute>}>
         <Route path="/contacts" element={<ContactsPage />} />
+        <Route path="/collections" element={<CollectionsPage />} />
+        <Route path="/collections/:id" element={<CollectionDetailPage />} />
+        <Route path="/labels" element={<LabelsPage />} />
         <Route path="/notes" element={<NotesPage />} />
         <Route path="/bookmarks" element={<BookmarksPage />} />
         <Route path="/profile" element={<ProfilePage />} />
@@ -68,6 +75,7 @@ export default function App() {
           <Route path="billing" element={<BillingSettings />} />
         </Route>
       </Route>
+      <Route path="/invite/:token" element={<InvitePage />} />
       <Route path="/" element={<Navigate to="/contacts" replace />} />
       <Route path="*" element={<NotFoundPage />} />
     </Routes>

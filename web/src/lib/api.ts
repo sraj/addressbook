@@ -1,4 +1,4 @@
-import type { Contact, Note, Bookmark, User, UserPreferences } from '@/types'
+import type { Contact, Note, Bookmark, User, UserPreferences, Collection, LabelOrder, LabelFormat } from '@/types'
 import { AppError } from '@/lib/error'
 
 const BASE = '/api/v1'
@@ -49,6 +49,46 @@ async function request<T>(url: string, options?: RequestInit): Promise<T> {
   }
 
   return res.json()
+}
+
+async function upload<T>(url: string, formData: FormData): Promise<T> {
+  const headers = await csrfHeader()
+  const res = await fetch(`${BASE}${url}`, {
+    method: 'POST',
+    credentials: 'include',
+    headers,
+    body: formData,
+  })
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({ error: res.statusText }))
+    throw new AppError(
+      body.error || res.statusText,
+      res.status,
+      body.fields,
+      body.request_id,
+    )
+  }
+  return res.json()
+}
+
+async function download(url: string): Promise<void> {
+  const res = await fetch(`${BASE}${url}`, { credentials: 'include' })
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({ error: res.statusText }))
+    throw new AppError(body.error || res.statusText, res.status, body.fields, body.request_id)
+  }
+  const blob = await res.blob()
+  const disposition = res.headers.get('Content-Disposition') || ''
+  let filename = 'contacts.csv'
+  const match = disposition.match(/filename="?([^";]+)"?/)
+  if (match) filename = match[1]
+  const link = document.createElement('a')
+  link.href = URL.createObjectURL(blob)
+  link.download = filename
+  document.body.appendChild(link)
+  link.click()
+  link.remove()
+  URL.revokeObjectURL(link.href)
 }
 
 export const api = {
@@ -116,6 +156,110 @@ export const api = {
 
   deleteContact: (id: number) =>
     request<void>(`/contacts/${id}`, { method: 'DELETE' }),
+
+  importContacts: (file: File, format: 'csv' | 'xlsx', collectionId?: number) => {
+    const fd = new FormData()
+    fd.append('file', file)
+    return upload<{ imported: number; skipped: number }>(
+      `/contacts/import?format=${format}${collectionId ? `&collection_id=${collectionId}` : ''}`,
+      fd,
+    )
+  },
+
+  exportContacts: (format: 'csv' | 'xlsx', collectionId?: number) =>
+    download(`/contacts/export?format=${format}${collectionId ? `&collection_id=${collectionId}` : ''}`),
+
+  getCollections: () =>
+    request<{ collections: Collection[] }>('/collections'),
+
+  createCollection: (name: string) =>
+    request<Collection>('/collections', {
+      method: 'POST',
+      body: JSON.stringify({ name }),
+    }),
+
+  getCollection: (id: number) =>
+    request<Collection>(`/collections/${id}`),
+
+  renameCollection: (id: number, name: string) =>
+    request<Collection>(`/collections/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify({ name }),
+    }),
+
+  deleteCollection: (id: number) =>
+    request<void>(`/collections/${id}`, { method: 'DELETE' }),
+
+  regenerateCollectionToken: (id: number) =>
+    request<Collection>(`/collections/${id}/regenerate-token`, { method: 'POST' }),
+
+  getCollectionContacts: (id: number, params: { page?: number; size?: number }) => {
+    const sp = new URLSearchParams()
+    sp.set('page', String(params.page ?? 1))
+    sp.set('size', String(params.size ?? 20))
+    return request<{ data: Contact[]; total: number; page: number; size: number; total_pages: number }>(
+      `/collections/${id}/contacts?${sp.toString()}`
+    )
+  },
+
+  addCollectionContact: (id: number, data: Omit<Contact, 'id' | 'user_id' | 'collection_id' | 'created_at' | 'updated_at'>) =>
+    request<Contact>(`/collections/${id}/contacts`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  moveContactToCollection: (collectionId: number, contactId: number) =>
+    request<void>(`/collections/${collectionId}/contacts/${contactId}`, { method: 'PUT' }),
+
+  removeContactFromCollection: (collectionId: number, contactId: number) =>
+    request<void>(`/collections/${collectionId}/contacts/${contactId}`, { method: 'DELETE' }),
+
+  getInviteInfo: (token: string) =>
+    request<{ name: string; token: string }>(`/invites/${token}`),
+
+  submitInvite: (token: string, data: { name: string; email?: string; phone?: string; address: { label?: string; line1: string; line2?: string; city: string; state: string; zip: string; country: string } }) =>
+    request<{ status: string; name: string }>(`/invites/${token}`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  getLabelOrders: () =>
+    request<{ orders: LabelOrder[] }>('/labels/orders'),
+
+  getLabelFormats: () =>
+    request<{ formats: LabelFormat[] }>('/labels/formats'),
+
+  createLabelOrder: (collectionId?: number, email?: string, format?: string) =>
+    request<{ order: LabelOrder; url: string }>('/labels/order', {
+      method: 'POST',
+      body: JSON.stringify({ collection_id: collectionId ?? 0, email: email ?? '', format: format ?? '' }),
+    }),
+
+  confirmLabelOrder: (sessionId: string) =>
+    request<LabelOrder>(`/labels/confirm?session_id=${encodeURIComponent(sessionId)}`, { method: 'POST' }),
+
+  labelSheetUrl: (collectionId?: number, format?: string) =>
+    `/labels/sheet${collectionId ? `?collection_id=${collectionId}` : ''}${format ? `${collectionId ? '&' : '?'}format=${format}` : ''}`,
+
+  downloadLabelSheet: async (collectionId?: number, format?: string) => {
+    const res = await fetch(`${BASE}/labels/sheet${collectionId ? `?collection_id=${collectionId}` : ''}${format ? `${collectionId ? '&' : '?'}format=${format}` : ''}`, {
+      credentials: 'include',
+    })
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({ error: res.statusText }))
+      throw new AppError(body.error || res.statusText, res.status, body.fields, body.request_id)
+    }
+    const html = await res.text()
+    const blob = new Blob([html], { type: 'text/html;charset=utf-8' })
+    const filename = `address-labels-${format || '5160'}.html`
+    const link = document.createElement('a')
+    link.href = URL.createObjectURL(blob)
+    link.download = filename
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+    URL.revokeObjectURL(link.href)
+  },
 
   getNotes: (params: { page?: number; size?: number }) => {
     const sp = new URLSearchParams()
