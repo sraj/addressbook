@@ -212,16 +212,16 @@ export default function ContactsPage() {
                         {contact.emails?.slice(0, 2).map((e, i) => (
                           <span key={i}>{e}<br /></span>
                         ))}
-                        {contact.emails?.length > 2 && <span className="text-xs">+{contact.emails.length - 2} more</span>}
+                        {contact.emails && contact.emails.length > 2 && <span className="text-xs">+{contact.emails.length - 2} more</span>}
                       </TableCell>
                       <TableCell className="hidden md:table-cell text-muted-foreground max-w-[150px] truncate">
                         {contact.phones?.slice(0, 2).map((p, i) => (
                           <span key={i}>{p}<br /></span>
                         ))}
-                        {contact.phones?.length > 2 && <span className="text-xs">+{contact.phones.length - 2} more</span>}
+                        {contact.phones && contact.phones.length > 2 && <span className="text-xs">+{contact.phones.length - 2} more</span>}
                       </TableCell>
                       <TableCell className="hidden lg:table-cell text-muted-foreground max-w-[200px] truncate">
-                        {contact.addresses[0]?.line1}, {contact.addresses[0]?.city}
+                        {contact.addresses?.[0]?.line1}, {contact.addresses?.[0]?.city}
                       </TableCell>
                       <TableCell className="hidden xl:table-cell text-muted-foreground max-w-[120px] truncate">
                         {collectionName(contact.collection_id)}

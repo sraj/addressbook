@@ -13,9 +13,9 @@ export interface Contact {
   user_id: number
   collection_id?: number
   name: string
-  emails: string[]
-  phones: string[]
-  addresses: Address[]
+  emails: string[] | null
+  phones: string[] | null
+  addresses: Address[] | null
   notes: string
   created_at: string
   updated_at: string

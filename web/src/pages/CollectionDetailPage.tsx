@@ -266,7 +266,7 @@ export default function CollectionDetailPage() {
                         <TableCell className="font-medium">{contact.name}</TableCell>
                         <TableCell className="hidden sm:table-cell text-muted-foreground">{contact.emails?.[0]}</TableCell>
                         <TableCell className="hidden md:table-cell text-muted-foreground">
-                          {contact.addresses[0]?.line1}, {contact.addresses[0]?.city}
+                          {contact.addresses?.[0]?.line1}, {contact.addresses?.[0]?.city}
                         </TableCell>
                         <TableCell className="text-right">
                           <div className="flex justify-end gap-1">

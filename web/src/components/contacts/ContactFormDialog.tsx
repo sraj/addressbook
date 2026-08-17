@@ -31,12 +31,15 @@ const emptyForm = (): FormData => ({
 })
 
 function contactToForm(contact: Contact): FormData {
+  const emails = contact.emails ?? []
+  const phones = contact.phones ?? []
+  const addresses = contact.addresses ?? []
   return {
     name: contact.name,
-    emails: contact.emails.length > 0 ? contact.emails : [''],
-    phones: contact.phones.length > 0 ? contact.phones : [''],
-    addresses: contact.addresses.length > 0
-      ? contact.addresses.map((a) => ({
+    emails: emails.length > 0 ? emails : [''],
+    phones: phones.length > 0 ? phones : [''],
+    addresses: addresses.length > 0
+      ? addresses.map((a) => ({
           label: (['Home', 'Office', 'Other'].includes(a.label) ? a.label : 'Home') as 'Home' | 'Office' | 'Other',
           line1: a.line1,
           line2: a.line2 || '',
