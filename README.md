@@ -1,16 +1,38 @@
 # Address Book
 
-Full-stack address book SaaS — contacts, notes, bookmarks, authentication, billing (Stripe), and an admin panel. Go backend (kern + xdb) with a React/TypeScript frontend.
+Full-stack address book SaaS — contacts, collections with invite links, printable/orderable address labels (Avery formats), CSV/XLSX import-export, notes, bookmarks, authentication, billing (Stripe), and an admin panel. Go backend (kern + xdb) with a React/TypeScript frontend.
 
 ![Address Book](docs/screenshot0.png)
 ![Address Book - Billing](docs/screenshot1.png)
 ![Address Book - Admin(Stripe configure)](docs/screenshot2.png)
+
+## Features
+
+- **Contacts** — CRUD with search, pagination, and quota limits
+- **Collections** — organize contacts into groups, each with a shareable invite link so others can submit their address directly
+- **Move / remove** — reassign contacts between collections from the contacts list or the collection page
+- **Address labels** — print-yourself sheets or Stripe-ordered printed labels for Avery **5160 (default), 8160, 5162, 5163, 6871**
+- **Import / Export** — CSV and XLSX, optionally scoped to a collection
+- Notes, bookmarks, profile/preferences, billing (Stripe), admin panel
 
 ## Stack
 
 - **Backend**: Go 1.26, [kern](https://github.com/mobentum/kern) framework + extensions (xconfig, xlog, xotel, xvalidator), [xdb](https://github.com/mobentum/xdb) ORM, SQLite (dev) or PostgreSQL (prod)
 - **Frontend**: React 19 + TypeScript, Vite 6, Tailwind CSS 4, Zustand, React Hook Form + Zod, Radix UI
 - **Infra**: Docker Compose, GitHub Actions CI, OpenObserve + Fluent Bit + postgres-exporter (optional observability)
+
+## API Overview
+
+The public API is grouped under `/api/v1`:
+
+| Area        | Endpoints                                                                 |
+|-------------|---------------------------------------------------------------------------|
+| Auth        | `POST /auth/register`, `/auth/login`, `/auth/logout`, `GET /auth/me`      |
+| Contacts    | `GET/POST /contacts`, `GET/PUT/DELETE /contacts/:id`, search, import/export |
+| Collections | CRUD under `/collections`, invite tokens, `POST /collections/:id/contacts`, `PUT/DELETE /collections/:id/contacts/:contactId` (move/remove) |
+| Labels      | `GET /labels/sheet?collection_id=&format=`, `POST /labels/order`, `GET /labels/orders`, `GET /labels/formats` |
+| Billing     | plans, checkout, portal, webhooks, invoices                                |
+| Admin       | users, plans, Stripe sync                                                  |
 
 ## Quick Start
 
@@ -62,6 +84,9 @@ Copy `.env.example` to `.env` and set values. All config is loaded via environme
 | `CORS_ORIGINS`          | `http://localhost:5173,http://localhost:3000` | Allowed CORS origins             |
 | `STRIPE_SECRET_KEY`     | empty                                      | Stripe API key (billing)             |
 | `STRIPE_WEBHOOK_SECRET` | empty                                      | Stripe webhook signing secret        |
+| `LABEL_PRICE_CENTS`     | `150`                                      | Price per printed label sheet (minor units) |
+| `LABEL_CURRENCY`        | `usd`                                      | Currency for label orders            |
+| `LABEL_LABELS_PER_SHEET`| `30`                                       | Default labels per sheet             |
 | `OTLP_ENDPOINT`         | `localhost:4318`                           | OpenTelemetry OTLP endpoint          |
 | `MAIL_PROVIDER` / `MAIL_API_KEY` | empty                              | Email sending (optional)             |
 
@@ -136,7 +161,7 @@ cmd/admin/         admin CLI — migrate, seed, setup
 internal/app/      composition root
 internal/auth/     identity, JWT, passwords
 internal/billing/  Stripe plans, subscriptions, webhooks
-internal/features/ contact | note | bookmark
+internal/features/ contact | note | bookmark | collection | label
 internal/admin/    admin panel services
 internal/shared/   db, middleware, response helpers, search interface
 migrations/        sqlite/ + postgres/ driver-specific SQL
