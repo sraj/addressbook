@@ -15,7 +15,7 @@ export default defineConfig({
       output: {
         manualChunks: {
           vendor: ['react', 'react-dom', 'react-router-dom'],
-          ui: ['lucide-react', 'react-select'],
+          ui: ['lucide-react', '@mobentum/nebula-ui'],
         },
       },
     },

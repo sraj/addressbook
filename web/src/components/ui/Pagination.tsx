@@ -1,4 +1,4 @@
-import { Button } from '@/components/ui/button'
+import { PaginationRoot, PaginationList, PaginationItem, PaginationPrevious, PaginationNext, PaginationPage } from '@mobentum/nebula-ui'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 
 interface PaginationProps {
@@ -19,42 +19,44 @@ export default function Pagination({
       <span className="hidden sm:inline">
         Page {page} of {totalPages} ({total} total)
       </span>
-      <div className="flex items-center gap-1">
-        <Button
-          variant="outline"
-          size="sm"
-          disabled={page <= 1}
-          onClick={() => onPageChange(page - 1)}
-        >
-          <ChevronLeft className="h-4 w-4" />
-          <span className="hidden sm:inline">Previous</span>
-        </Button>
-        {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
-          const start = Math.max(1, page - 2)
-          const p = start + i
-          if (p > totalPages) return null
-          return (
-            <Button
-              key={p}
-              variant={p === page ? 'default' : 'outline'}
-              size="sm"
-              className="min-w-[32px]"
-              onClick={() => onPageChange(p)}
+      <PaginationRoot className="mx-0 w-auto justify-end">
+        <PaginationList>
+          <PaginationItem>
+            <PaginationPrevious
+              disabled={page <= 1}
+              onClick={() => onPageChange(page - 1)}
             >
-              {p}
-            </Button>
-          )
-        })}
-        <Button
-          variant="outline"
-          size="sm"
-          disabled={page >= totalPages}
-          onClick={() => onPageChange(page + 1)}
-        >
-          <span className="hidden sm:inline">Next</span>
-          <ChevronRight className="h-4 w-4" />
-        </Button>
-      </div>
+              <ChevronLeft className="h-4 w-4" />
+              <span className="hidden sm:inline">Previous</span>
+            </PaginationPrevious>
+          </PaginationItem>
+          {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+            const start = Math.max(1, page - 2)
+            const p = start + i
+            if (p > totalPages) return null
+            return (
+              <PaginationItem key={p}>
+                <PaginationPage
+                  className="min-w-[32px]"
+                  aria-current={p === page ? 'page' : undefined}
+                  onClick={() => onPageChange(p)}
+                >
+                  {p}
+                </PaginationPage>
+              </PaginationItem>
+            )
+          })}
+          <PaginationItem>
+            <PaginationNext
+              disabled={page >= totalPages}
+              onClick={() => onPageChange(page + 1)}
+            >
+              <span className="hidden sm:inline">Next</span>
+              <ChevronRight className="h-4 w-4" />
+            </PaginationNext>
+          </PaginationItem>
+        </PaginationList>
+      </PaginationRoot>
     </div>
   )
 }

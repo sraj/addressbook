@@ -1,12 +1,10 @@
+import { forwardRef } from 'react'
+import { Skeleton as NSkeleton, type SkeletonProps as NSkeletonProps } from '@mobentum/nebula-ui'
 import { cn } from '@/lib/utils'
 
-function Skeleton({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
-  return (
-    <div
-      className={cn('animate-pulse rounded-md bg-primary/10', className)}
-      {...props}
-    />
-  )
-}
+const Skeleton = forwardRef<HTMLDivElement, NSkeletonProps>(({ className, ...props }, ref) => (
+  <NSkeleton ref={ref} className={cn('bg-primary/10', className)} {...props} />
+))
+Skeleton.displayName = 'Skeleton'
 
 export { Skeleton }
