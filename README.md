@@ -19,7 +19,7 @@ Full-stack address book SaaS — contacts, collections with invite links, printa
 ## Stack
 
 - **Backend**: Go 1.26, [kern](https://github.com/mobentum/kern) framework + extensions (xconfig, xlog, xotel, xvalidator), [xdb](https://github.com/mobentum/xdb) ORM, SQLite (dev) or PostgreSQL (prod)
-- **Frontend**: React 19 + TypeScript, Vite 6, Tailwind CSS 4, Zustand, React Hook Form + Zod, Radix UI
+- **Frontend**: React 19 + TypeScript, Vite 6, Tailwind CSS 4, Zustand, React Hook Form + Zod, [@mobentum/nebula-ui](https://github.com/mobentum/nebula-ui)
 - **Infra**: Docker Compose, GitHub Actions CI, OpenObserve + Fluent Bit + postgres-exporter (optional observability)
 
 ## API Overview
