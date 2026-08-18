@@ -61,7 +61,7 @@ func parseXLSX(data []byte) ([]ImportRecord, error) {
 	if err != nil {
 		return nil, fmt.Errorf("open xlsx: %w", err)
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 
 	sheets := f.GetSheetList()
 	if len(sheets) == 0 {
@@ -214,7 +214,7 @@ func ExportCSV(contacts []domain.Contact) ([]byte, error) {
 // ExportXLSX renders contacts as an XLSX workbook with a single sheet.
 func ExportXLSX(contacts []domain.Contact) ([]byte, error) {
 	f := excelize.NewFile()
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 
 	sheet := "Contacts"
 	if err := f.SetSheetName("Sheet1", sheet); err != nil {

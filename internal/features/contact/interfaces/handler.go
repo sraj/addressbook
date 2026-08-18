@@ -198,7 +198,7 @@ func (h *Handler) Import(c *kern.Context) {
 		shared.SendError(c, http.StatusBadRequest, "failed to open file")
 		return
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 	data, err := io.ReadAll(f)
 	if err != nil {
 		shared.SendError(c, http.StatusInternalServerError, "failed to read file", err)
