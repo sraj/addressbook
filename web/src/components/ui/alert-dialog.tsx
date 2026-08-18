@@ -1,51 +1,40 @@
-import { forwardRef, type ComponentRef, type ComponentPropsWithoutRef, type HTMLAttributes } from 'react'
+import { forwardRef, type HTMLAttributes } from 'react'
 import {
-  Root as AlertDialogRoot,
-  Portal as AlertDialogPortal,
-  Overlay as AlertDialogOverlayPrimitive,
-  Content as AlertDialogContentPrimitive,
-  Title as AlertDialogTitlePrimitive,
-  Description as AlertDialogDescriptionPrimitive,
-  Action as AlertDialogActionPrimitive,
-  Cancel as AlertDialogCancelPrimitive,
-} from '@radix-ui/react-alert-dialog'
+  AlertDialogRoot as NAlertDialogRoot,
+  AlertDialogPortal as NAlertDialogPortal,
+  AlertDialogPopup as NAlertDialogPopup,
+  AlertDialogBackdrop as NAlertDialogBackdrop,
+  AlertDialogTitle as NAlertDialogTitle,
+  AlertDialogDescription as NAlertDialogDescription,
+  AlertDialogCancel as NAlertDialogCancel,
+  AlertDialogAction as NAlertDialogAction,
+  type AlertDialogPopupProps,
+  type AlertDialogTitleProps,
+  type AlertDialogDescriptionProps,
+  type AlertDialogCloseProps,
+} from '@mobentum/nebula-ui'
 import { cn } from '@/lib/utils'
-import { buttonVariants } from '@/components/ui/button'
 
-const AlertDialog = AlertDialogRoot
+const AlertDialog = NAlertDialogRoot
 
-const AlertDialogOverlay = forwardRef<
-  ComponentRef<typeof AlertDialogOverlayPrimitive>,
-  ComponentPropsWithoutRef<typeof AlertDialogOverlayPrimitive>
->(({ className, ...props }, ref) => (
-  <AlertDialogOverlayPrimitive
-    className={cn(
-      'fixed inset-0 z-50 bg-black/80 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',
-      className,
-    )}
-    {...props}
-    ref={ref}
-  />
-))
-AlertDialogOverlay.displayName = AlertDialogOverlayPrimitive.displayName
-
-const AlertDialogContent = forwardRef<
-  ComponentRef<typeof AlertDialogContentPrimitive>,
-  ComponentPropsWithoutRef<typeof AlertDialogContentPrimitive>
->(({ className, ...props }, ref) => (
-  <AlertDialogPortal>
-    <AlertDialogOverlay />
-    <AlertDialogContentPrimitive
-      ref={ref}
-      className={cn(
-        'fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] sm:rounded-lg',
-        className,
-      )}
-      {...props}
-    />
-  </AlertDialogPortal>
-))
-AlertDialogContent.displayName = AlertDialogContentPrimitive.displayName
+const AlertDialogContent = forwardRef<HTMLDivElement, AlertDialogPopupProps>(
+  ({ className, children, ...props }, ref) => (
+    <NAlertDialogPortal>
+      <NAlertDialogBackdrop />
+      <NAlertDialogPopup
+        ref={ref}
+        className={cn(
+          'fixed left-1/2 top-1/2 z-50 grid w-full max-w-lg -translate-x-1/2 -translate-y-1/2 gap-4 border bg-background p-6 shadow-lg sm:rounded-lg',
+          className,
+        )}
+        {...props}
+      >
+        {children}
+      </NAlertDialogPopup>
+    </NAlertDialogPortal>
+  ),
+)
+AlertDialogContent.displayName = 'AlertDialogContent'
 
 const AlertDialogHeader = ({ className, ...props }: HTMLAttributes<HTMLDivElement>) => (
   <div className={cn('flex flex-col space-y-2 text-center sm:text-left', className)} {...props} />
@@ -57,53 +46,33 @@ const AlertDialogFooter = ({ className, ...props }: HTMLAttributes<HTMLDivElemen
 )
 AlertDialogFooter.displayName = 'AlertDialogFooter'
 
-const AlertDialogTitle = forwardRef<
-  ComponentRef<typeof AlertDialogTitlePrimitive>,
-  ComponentPropsWithoutRef<typeof AlertDialogTitlePrimitive>
->(({ className, ...props }, ref) => (
-  <AlertDialogTitlePrimitive
-    ref={ref}
-    className={cn('text-lg font-semibold', className)}
-    {...props}
-  />
-))
-AlertDialogTitle.displayName = AlertDialogTitlePrimitive.displayName
+const AlertDialogTitle = forwardRef<HTMLHeadingElement, AlertDialogTitleProps>(
+  ({ className, ...props }, ref) => (
+    <NAlertDialogTitle ref={ref} className={cn('text-lg font-semibold', className)} {...props} />
+  ),
+)
+AlertDialogTitle.displayName = 'AlertDialogTitle'
 
-const AlertDialogDescription = forwardRef<
-  ComponentRef<typeof AlertDialogDescriptionPrimitive>,
-  ComponentPropsWithoutRef<typeof AlertDialogDescriptionPrimitive>
->(({ className, ...props }, ref) => (
-  <AlertDialogDescriptionPrimitive
-    ref={ref}
-    className={cn('text-sm text-muted-foreground', className)}
-    {...props}
-  />
-))
-AlertDialogDescription.displayName = AlertDialogDescriptionPrimitive.displayName
+const AlertDialogDescription = forwardRef<HTMLDivElement, AlertDialogDescriptionProps>(
+  ({ className, ...props }, ref) => (
+    <NAlertDialogDescription ref={ref} className={cn('text-sm text-muted-foreground', className)} {...props} />
+  ),
+)
+AlertDialogDescription.displayName = 'AlertDialogDescription'
 
-const AlertDialogAction = forwardRef<
-  ComponentRef<typeof AlertDialogActionPrimitive>,
-  ComponentPropsWithoutRef<typeof AlertDialogActionPrimitive>
->(({ className, ...props }, ref) => (
-  <AlertDialogActionPrimitive
-    ref={ref}
-    className={cn(buttonVariants(), className)}
-    {...props}
-  />
-))
-AlertDialogAction.displayName = AlertDialogActionPrimitive.displayName
+const AlertDialogAction = forwardRef<HTMLButtonElement, AlertDialogCloseProps>(
+  ({ className, ...props }, ref) => (
+    <NAlertDialogAction ref={ref} className={cn('h-9 px-4 py-2', className)} {...props} />
+  ),
+)
+AlertDialogAction.displayName = 'AlertDialogAction'
 
-const AlertDialogCancel = forwardRef<
-  ComponentRef<typeof AlertDialogCancelPrimitive>,
-  ComponentPropsWithoutRef<typeof AlertDialogCancelPrimitive>
->(({ className, ...props }, ref) => (
-  <AlertDialogCancelPrimitive
-    ref={ref}
-    className={cn(buttonVariants({ variant: 'outline' }), 'mt-2 sm:mt-0', className)}
-    {...props}
-  />
-))
-AlertDialogCancel.displayName = AlertDialogCancelPrimitive.displayName
+const AlertDialogCancel = forwardRef<HTMLButtonElement, AlertDialogCloseProps>(
+  ({ className, ...props }, ref) => (
+    <NAlertDialogCancel ref={ref} className={cn('mt-2 h-9 px-4 py-2 sm:mt-0', className)} {...props} />
+  ),
+)
+AlertDialogCancel.displayName = 'AlertDialogCancel'
 
 export {
   AlertDialog,

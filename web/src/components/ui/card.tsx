@@ -1,48 +1,58 @@
-import { forwardRef, type HTMLAttributes } from 'react'
+import { forwardRef } from 'react'
+import {
+  CardRoot as NCard,
+  CardHeader as NCardHeader,
+  CardTitle as NCardTitle,
+  CardDescription as NCardDescription,
+  CardContent as NCardContent,
+  CardFooter as NCardFooter,
+  type CardRootProps,
+  type CardHeaderProps,
+  type CardTitleProps,
+  type CardDescriptionProps,
+  type CardContentProps,
+  type CardFooterProps,
+} from '@mobentum/nebula-ui'
 import { cn } from '@/lib/utils'
 
-const Card = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
+const Card = forwardRef<HTMLDivElement, CardRootProps>(
   ({ className, ...props }, ref) => (
-    <div
-      ref={ref}
-      className={cn('rounded-xl border bg-card text-card-foreground shadow', className)}
-      {...props}
-    />
+    <NCard ref={ref} className={cn('bg-card text-card-foreground', className)} {...props} />
   ),
 )
 Card.displayName = 'Card'
 
-const CardHeader = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
+const CardHeader = forwardRef<HTMLDivElement, CardHeaderProps>(
   ({ className, ...props }, ref) => (
-    <div ref={ref} className={cn('flex flex-col space-y-1.5 p-6', className)} {...props} />
+    <NCardHeader ref={ref} className={cn('flex flex-col space-y-1.5', className)} {...props} />
   ),
 )
 CardHeader.displayName = 'CardHeader'
 
-const CardTitle = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
+const CardTitle = forwardRef<HTMLDivElement, CardTitleProps>(
   ({ className, ...props }, ref) => (
-    <div ref={ref} className={cn('font-semibold leading-none tracking-tight', className)} {...props} />
+    <NCardTitle ref={ref} className={className} {...props} />
   ),
 )
 CardTitle.displayName = 'CardTitle'
 
-const CardDescription = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
+const CardDescription = forwardRef<HTMLDivElement, CardDescriptionProps>(
   ({ className, ...props }, ref) => (
-    <div ref={ref} className={cn('text-sm text-muted-foreground', className)} {...props} />
+    <NCardDescription ref={ref} className={className} {...props} />
   ),
 )
 CardDescription.displayName = 'CardDescription'
 
-const CardContent = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
+const CardContent = forwardRef<HTMLDivElement, CardContentProps>(
   ({ className, ...props }, ref) => (
-    <div ref={ref} className={cn('p-6 pt-0', className)} {...props} />
+    <NCardContent ref={ref} className={cn('pt-0', className)} {...props} />
   ),
 )
 CardContent.displayName = 'CardContent'
 
-const CardFooter = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
+const CardFooter = forwardRef<HTMLDivElement, CardFooterProps>(
   ({ className, ...props }, ref) => (
-    <div ref={ref} className={cn('flex items-center p-6 pt-0', className)} {...props} />
+    <NCardFooter ref={ref} className={cn('flex items-center', className)} {...props} />
   ),
 )
 CardFooter.displayName = 'CardFooter'

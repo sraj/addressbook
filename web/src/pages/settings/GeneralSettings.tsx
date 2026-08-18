@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
-import Select from 'react-select'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { toast } from '@/hooks/use-toast'
 import { showErrorToast } from '@/lib/error'
 import { api } from '@/lib/api'
@@ -27,17 +27,11 @@ const pageOptions = [
 ]
 
 const sizeOptions = [
-  { value: 10, label: '10' },
-  { value: 20, label: '20' },
-  { value: 50, label: '50' },
-  { value: 100, label: '100' },
+  { value: '10', label: '10' },
+  { value: '20', label: '20' },
+  { value: '50', label: '50' },
+  { value: '100', label: '100' },
 ]
-
-const selectStyles = {
-  control: (base: any) => ({ ...base, minHeight: 36 }),
-  valueContainer: (base: any) => ({ ...base, padding: '2px 8px' }),
-  indicatorSeparator: () => ({ display: 'none' }),
-}
 
 export default function GeneralSettings() {
   const user = useAuthStore((s) => s.user)
@@ -113,18 +107,19 @@ export default function GeneralSettings() {
       title: 'Default page',
       description: 'Choose your landing page after login',
       content: (
-        <Select
-          instanceId="default-page"
-          options={pageOptions}
-          value={pageOptions.find((o) => o.value === defaultPage)}
-          onChange={(opt) => {
-            if (opt) {
-              setDefaultPage(opt.value)
-              savePrefs({ default_page: opt.value })
-            }
-          }}
-          styles={selectStyles}
-        />
+        <Select value={defaultPage} onValueChange={(v) => {
+          setDefaultPage(v)
+          savePrefs({ default_page: v })
+        }}>
+          <SelectTrigger className="w-full sm:w-56" id="default-page">
+            <SelectValue placeholder="Select a page" />
+          </SelectTrigger>
+          <SelectContent>
+            {pageOptions.map((o) => (
+              <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       ),
     },
     {
@@ -133,18 +128,19 @@ export default function GeneralSettings() {
       title: 'Items per page',
       description: 'Number of items shown in lists',
       content: (
-        <Select
-          instanceId="page-size"
-          options={sizeOptions}
-          value={sizeOptions.find((o) => o.value === pageSize)}
-          onChange={(opt) => {
-            if (opt) {
-              setPageSize(opt.value)
-              savePrefs({ page_size: opt.value })
-            }
-          }}
-          styles={selectStyles}
-        />
+        <Select value={String(pageSize)} onValueChange={(v) => {
+          setPageSize(Number(v))
+          savePrefs({ page_size: Number(v) })
+        }}>
+          <SelectTrigger className="w-full sm:w-56" id="page-size">
+            <SelectValue placeholder="Select page size" />
+          </SelectTrigger>
+          <SelectContent>
+            {sizeOptions.map((o) => (
+              <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       ),
     },
     {
