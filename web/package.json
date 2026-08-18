@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.0.1",
-    "@mobentum/nebula-ui": "file:../../../mobentum/nebula-ui/packages/ui",
+    "@mobentum/nebula-ui": "^1.1.0",
     "@tailwindcss/typography": "^0.5.20",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
