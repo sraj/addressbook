@@ -9,6 +9,7 @@ import {
   SelectPopup as NSelectPopup,
   SelectItem as NSelectItem,
   SelectItemIndicator as NSelectItemIndicator,
+  SelectItemText as NSelectItemText,
   type SelectRootProps,
   type SelectTriggerProps,
   type SelectValueProps,
@@ -93,7 +94,7 @@ const SelectItem = forwardRef<HTMLDivElement, SelectItemProps>(
           <Check className="h-4 w-4" />
         </NSelectItemIndicator>
       </span>
-      {children}
+      <NSelectItemText>{children}</NSelectItemText>
     </NSelectItem>
   ),
 )
