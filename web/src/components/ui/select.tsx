@@ -1,4 +1,4 @@
-import { forwardRef } from 'react'
+import { Children, forwardRef, isValidElement, type ReactNode } from 'react'
 import {
   SelectRoot as NSelect,
   SelectGroup as NSelectGroup,
@@ -9,7 +9,6 @@ import {
   SelectPopup as NSelectPopup,
   SelectItem as NSelectItem,
   SelectItemIndicator as NSelectItemIndicator,
-  SelectItemText as NSelectItemText,
   type SelectRootProps,
   type SelectTriggerProps,
   type SelectValueProps,
@@ -19,17 +18,34 @@ import {
 import { Check, ChevronDown } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
+function collectItemLabels(children: ReactNode, out: Record<string, ReactNode> = {}): Record<string, ReactNode> {
+  Children.forEach(children, (child) => {
+    if (!isValidElement(child)) return
+    const childProps = child.props as { value?: string; children?: ReactNode }
+    if (typeof childProps.value === 'string') {
+      out[childProps.value] = childProps.children
+    }
+    if (childProps.children) {
+      collectItemLabels(childProps.children, out)
+    }
+  })
+  return out
+}
+
 type SelectProps = Omit<SelectRootProps, 'onValueChange'> & {
   onValueChange?: (value: string) => void
 }
 
-const Select = ({ onValueChange, ...props }: SelectProps) => (
+const Select = ({ onValueChange, children, ...props }: SelectProps) => (
   <NSelect
+    items={collectItemLabels(children)}
     onValueChange={(value) => {
       if (value !== null) onValueChange?.(String(value))
     }}
     {...props}
-  />
+  >
+    {children}
+  </NSelect>
 )
 Select.displayName = 'Select'
 
@@ -94,7 +110,7 @@ const SelectItem = forwardRef<HTMLDivElement, SelectItemProps>(
           <Check className="h-4 w-4" />
         </NSelectItemIndicator>
       </span>
-      <NSelectItemText>{children}</NSelectItemText>
+      {children}
     </NSelectItem>
   ),
 )
