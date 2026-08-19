@@ -160,14 +160,14 @@ export default function CollectionDetailPage() {
         <TabsContent value="contacts">
           <div className="mb-4 grid grid-cols-1 gap-4 lg:grid-cols-2">
             <Card>
-              <CardHeader className="pb-3">
+              <CardHeader>
                 <CardTitle className="text-base flex items-center gap-2">
                   <LinkIcon className="h-4 w-4" />
                   Invite Link
                 </CardTitle>
                 <CardDescription>Share this link so others can submit their address</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-3">
+              <CardContent>
                 <div className="flex items-center gap-2">
                   <Input readOnly value={inviteUrl} className="flex-1 min-w-0 font-mono text-xs" onFocus={(e) => e.target.select()} />
                   <Button size="icon" variant="outline" onClick={copyInvite} title="Copy link" className="shrink-0">
@@ -181,7 +181,7 @@ export default function CollectionDetailPage() {
             </Card>
 
             <Card>
-              <CardHeader className="pb-3">
+              <CardHeader>
                 <CardTitle className="text-base flex items-center gap-2">
                   <Users className="h-4 w-4" />
                   Import / Export

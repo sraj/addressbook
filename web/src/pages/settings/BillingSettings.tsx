@@ -141,7 +141,7 @@ export default function BillingSettings() {
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
       <Card>
-        <CardHeader className="pb-3">
+        <CardHeader>
           <div className="flex items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
               <CreditCard className="h-4 w-4 text-primary" />
@@ -211,7 +211,7 @@ export default function BillingSettings() {
       </Card>
 
       <Card>
-        <CardHeader className="pb-3">
+        <CardHeader>
           <div className="flex items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
               <BarChart3 className="h-4 w-4 text-primary" />
@@ -252,7 +252,7 @@ export default function BillingSettings() {
       </Card>
 
       <Card>
-        <CardHeader className="pb-3">
+        <CardHeader>
           <div className="flex items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
               <Receipt className="h-4 w-4 text-primary" />

@@ -110,7 +110,7 @@ export default function LabelPrintOrderCard({ collectionId }: LabelPrintOrderCar
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <Card>
-          <CardHeader className="pb-3">
+          <CardHeader>
             <div className="flex items-center gap-2">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
                 <Printer className="h-4 w-4 text-primary" />
@@ -154,7 +154,7 @@ export default function LabelPrintOrderCard({ collectionId }: LabelPrintOrderCar
         </Card>
 
         <Card>
-          <CardHeader className="pb-3">
+          <CardHeader>
             <div className="flex items-center gap-2">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
                 <Tag className="h-4 w-4 text-primary" />
@@ -195,7 +195,7 @@ export default function LabelPrintOrderCard({ collectionId }: LabelPrintOrderCar
       </div>
 
       <Card>
-        <CardHeader className="pb-3">
+        <CardHeader>
           <CardTitle className="text-base flex items-center gap-2">
             <Tag className="h-4 w-4" />
             Order History

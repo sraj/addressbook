@@ -116,7 +116,7 @@ export default function CollectionsPage() {
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {collections.map((collection) => (
             <Card key={collection.id} className="cursor-pointer transition-shadow hover:shadow-md" onClick={() => navigate(`/collections/${collection.id}`)}>
-              <CardHeader className="pb-2">
+              <CardHeader>
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex items-center gap-3">
                     <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10">

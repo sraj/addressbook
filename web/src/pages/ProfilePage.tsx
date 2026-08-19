@@ -115,7 +115,7 @@ export default function ProfilePage() {
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         {sections.map((section) => (
           <Card key={section.id}>
-            <CardHeader className="pb-3">
+            <CardHeader>
               <div className="flex items-center gap-2">
                 <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
                   <section.icon className="h-4 w-4 text-primary" />
