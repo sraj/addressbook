@@ -39,7 +39,7 @@ func (h *Handler) List(c *kern.Context) {
 }
 
 func (h *Handler) Create(c *kern.Context) {
-	req, ok := xvalidator.Validated[CreateRequest](c.Context())
+	req, ok := xvalidator.ValidatedFromContext[CreateRequest](c.Context())
 	if !ok {
 		return
 	}
@@ -82,7 +82,7 @@ func (h *Handler) Rename(c *kern.Context) {
 	if !ok {
 		return
 	}
-	req, ok := xvalidator.Validated[CreateRequest](c.Context())
+	req, ok := xvalidator.ValidatedFromContext[CreateRequest](c.Context())
 	if !ok {
 		return
 	}
@@ -157,7 +157,7 @@ func (h *Handler) AddContact(c *kern.Context) {
 	if !ok {
 		return
 	}
-	req, ok := xvalidator.Validated[ContactRequest](c.Context())
+	req, ok := xvalidator.ValidatedFromContext[ContactRequest](c.Context())
 	if !ok {
 		return
 	}
@@ -249,7 +249,7 @@ func (h *Handler) PublicSubmit(c *kern.Context) {
 		shared.SendError(c, http.StatusBadRequest, "missing invite token")
 		return
 	}
-	req, ok := xvalidator.Validated[SubmitRequest](c.Context())
+	req, ok := xvalidator.ValidatedFromContext[SubmitRequest](c.Context())
 	if !ok {
 		return
 	}

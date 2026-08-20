@@ -76,7 +76,7 @@ func (h *Handler) Get(c *kern.Context) {
 }
 
 func (h *Handler) Create(c *kern.Context) {
-	req, ok := xvalidator.Validated[application.CreateRequest](c.Context())
+	req, ok := xvalidator.ValidatedFromContext[application.CreateRequest](c.Context())
 	if !ok {
 		return
 	}
@@ -107,7 +107,7 @@ func (h *Handler) Update(c *kern.Context) {
 		return
 	}
 
-	req, ok := xvalidator.Validated[application.UpdateRequest](c.Context())
+	req, ok := xvalidator.ValidatedFromContext[application.UpdateRequest](c.Context())
 	if !ok {
 		return
 	}
@@ -160,7 +160,7 @@ func (h *Handler) Delete(c *kern.Context) {
 }
 
 func (h *Handler) Import(c *kern.Context) {
-	req, ok := xvalidator.Validated[application.ImportRequest](c.Context())
+	req, ok := xvalidator.ValidatedFromContext[application.ImportRequest](c.Context())
 	if !ok {
 		return
 	}

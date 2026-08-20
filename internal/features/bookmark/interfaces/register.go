@@ -1,11 +1,11 @@
 package interfaces
 
 import (
+	"github.com/mobentum/xdb"
+	"github.com/samber/do/v2"
 	billingApp "github.com/sraj/addressbook/internal/billing/application"
 	"github.com/sraj/addressbook/internal/features/bookmark/application"
 	"github.com/sraj/addressbook/internal/features/bookmark/infrastructure"
-	"github.com/mobentum/xdb"
-	"github.com/samber/do/v2"
 )
 
 // Provide registers the bookmark service and handler into the injector.

@@ -7,11 +7,11 @@ import (
 	"time"
 
 	"github.com/mobentum/kern"
+	"github.com/mobentum/kern/extensions/xvalidator"
 	"github.com/sraj/addressbook/internal/auth/application"
 	"github.com/sraj/addressbook/internal/auth/domain"
 	"github.com/sraj/addressbook/internal/mailer"
 	"github.com/sraj/addressbook/internal/shared"
-	"github.com/mobentum/kern/extensions/xvalidator"
 )
 
 func (h *Handler) trySend(to, subject, body string) {
@@ -62,7 +62,7 @@ func (h *Handler) clearTokenCookie(c *kern.Context) {
 }
 
 func (h *Handler) Register(c *kern.Context) {
-	req, ok := xvalidator.Validated[application.RegisterRequest](c.Context())
+	req, ok := xvalidator.ValidatedFromContext[application.RegisterRequest](c.Context())
 	if !ok {
 		return
 	}
@@ -94,7 +94,7 @@ func (h *Handler) Register(c *kern.Context) {
 }
 
 func (h *Handler) Login(c *kern.Context) {
-	req, ok := xvalidator.Validated[application.LoginRequest](c.Context())
+	req, ok := xvalidator.ValidatedFromContext[application.LoginRequest](c.Context())
 	if !ok {
 		return
 	}
@@ -116,7 +116,7 @@ func (h *Handler) Login(c *kern.Context) {
 	}
 
 	h.setTokenCookie(c, token)
-		_ = c.JSON(http.StatusOK, application.AuthResponse{User: userToInfo(user)})
+	_ = c.JSON(http.StatusOK, application.AuthResponse{User: userToInfo(user)})
 }
 
 func (h *Handler) Me(c *kern.Context) {
@@ -132,7 +132,7 @@ func (h *Handler) Me(c *kern.Context) {
 		return
 	}
 
-		_ = c.JSON(http.StatusOK, application.AuthResponse{User: userToInfo(user)})
+	_ = c.JSON(http.StatusOK, application.AuthResponse{User: userToInfo(user)})
 }
 
 func (h *Handler) Logout(c *kern.Context) {
@@ -141,7 +141,7 @@ func (h *Handler) Logout(c *kern.Context) {
 }
 
 func (h *Handler) ForgotPassword(c *kern.Context) {
-	req, ok := xvalidator.Validated[application.ForgotPasswordRequest](c.Context())
+	req, ok := xvalidator.ValidatedFromContext[application.ForgotPasswordRequest](c.Context())
 	if !ok {
 		return
 	}
@@ -162,7 +162,7 @@ func (h *Handler) ForgotPassword(c *kern.Context) {
 }
 
 func (h *Handler) ResetPassword(c *kern.Context) {
-	req, ok := xvalidator.Validated[application.ResetPasswordRequest](c.Context())
+	req, ok := xvalidator.ValidatedFromContext[application.ResetPasswordRequest](c.Context())
 	if !ok {
 		return
 	}
@@ -180,7 +180,7 @@ func (h *Handler) ResetPassword(c *kern.Context) {
 }
 
 func (h *Handler) ChangePassword(c *kern.Context) {
-	req, ok := xvalidator.Validated[application.ChangePasswordRequest](c.Context())
+	req, ok := xvalidator.ValidatedFromContext[application.ChangePasswordRequest](c.Context())
 	if !ok {
 		return
 	}
@@ -204,7 +204,7 @@ func (h *Handler) ChangePassword(c *kern.Context) {
 }
 
 func (h *Handler) UpdateProfile(c *kern.Context) {
-	req, ok := xvalidator.Validated[application.UpdateProfileRequest](c.Context())
+	req, ok := xvalidator.ValidatedFromContext[application.UpdateProfileRequest](c.Context())
 	if !ok {
 		return
 	}

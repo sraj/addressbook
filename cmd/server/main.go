@@ -143,7 +143,7 @@ func initServer(slogger *slog.Logger, cfg *config.Config) *kern.App {
 
 // registerRoutes keeps operational endpoints ahead of application routes.
 func registerRoutes(cfg *config.Config, server *kern.App, db *xdb.DB, application *app.App) {
-    // Initialize OTLP-related middleware or handlers here if needed.
+	// Initialize OTLP-related middleware or handlers here if needed.
 	registerOperationalRoutes(cfg, server, db)
 	registerApplicationRoutes(server, application)
 }
@@ -167,7 +167,7 @@ func registerOperationalRoutes(cfg *config.Config, server *kern.App, db *xdb.DB)
 	if cfg.EnableOTLP {
 		// Initialize OTLP-related middleware or handlers here if needed.
 		// Expose Go runtime and process metrics for the observability stack.
-	    registerMetrics(server)
+		registerMetrics(server)
 	}
 }
 
@@ -188,6 +188,6 @@ func registerApplicationRoutes(server *kern.App, application *app.App) {
 		token, _ := middleware.CSRFTokenFromContext(c.Context())
 		_ = c.JSON(http.StatusOK, map[string]string{"csrf_token": token})
 	})
-	
+
 	application.RegisterRoutes(server, jwtAuth, authRateLimit)
 }

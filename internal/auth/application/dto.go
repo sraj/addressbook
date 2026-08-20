@@ -39,6 +39,6 @@ type ChangePasswordRequest struct {
 }
 
 type UpdateProfileRequest struct {
-	Name        string           `json:"name" validate:"required"`
+	Name        string              `json:"name" validate:"required"`
 	Preferences *domain.Preferences `json:"preferences,omitempty"`
 }

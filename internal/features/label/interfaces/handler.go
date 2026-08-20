@@ -57,7 +57,7 @@ func (h *Handler) Order(c *kern.Context) {
 		c.NoContent(http.StatusUnauthorized)
 		return
 	}
-	req, ok := xvalidator.Validated[OrderRequest](c.Context())
+	req, ok := xvalidator.ValidatedFromContext[OrderRequest](c.Context())
 	if !ok {
 		return
 	}

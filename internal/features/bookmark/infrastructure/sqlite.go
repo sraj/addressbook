@@ -5,8 +5,8 @@ import (
 	"errors"
 	"time"
 
-	"github.com/sraj/addressbook/internal/features/bookmark/domain"
 	"github.com/mobentum/xdb"
+	"github.com/sraj/addressbook/internal/features/bookmark/domain"
 )
 
 type bookmarkModel struct {

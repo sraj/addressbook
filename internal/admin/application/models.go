@@ -12,8 +12,8 @@ type UserRow struct {
 }
 
 type StatsResponse struct {
-	TotalUsers    int `json:"total_users"`
-	ActiveToday   int `json:"active_today"`
-	FreeAccounts  int `json:"free_accounts"`
-	ProAccounts   int `json:"pro_accounts"`
+	TotalUsers   int `json:"total_users"`
+	ActiveToday  int `json:"active_today"`
+	FreeAccounts int `json:"free_accounts"`
+	ProAccounts  int `json:"pro_accounts"`
 }

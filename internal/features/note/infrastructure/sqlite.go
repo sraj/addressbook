@@ -5,8 +5,8 @@ import (
 	"errors"
 	"time"
 
-	"github.com/sraj/addressbook/internal/features/note/domain"
 	"github.com/mobentum/xdb"
+	"github.com/sraj/addressbook/internal/features/note/domain"
 )
 
 type noteModel struct {

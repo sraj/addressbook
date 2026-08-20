@@ -10,13 +10,13 @@ import (
 	"os"
 	"strings"
 
+	"github.com/mobentum/kern/extensions/xlog"
+	"github.com/mobentum/xdb"
 	authInfra "github.com/sraj/addressbook/internal/auth/infrastructure"
 	billingInfra "github.com/sraj/addressbook/internal/billing/infrastructure"
 	"github.com/sraj/addressbook/internal/config"
 	"github.com/sraj/addressbook/internal/shared"
 	"github.com/sraj/addressbook/migrations"
-	"github.com/mobentum/kern/extensions/xlog"
-	"github.com/mobentum/xdb"
 	"github.com/urfave/cli/v2"
 )
 

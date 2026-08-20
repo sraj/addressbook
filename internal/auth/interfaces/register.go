@@ -1,14 +1,14 @@
 package interfaces
 
 import (
+	"github.com/mobentum/xdb"
+	"github.com/samber/do/v2"
 	"github.com/sraj/addressbook/internal/auth/application"
 	"github.com/sraj/addressbook/internal/auth/infrastructure"
 	billingApp "github.com/sraj/addressbook/internal/billing/application"
 	"github.com/sraj/addressbook/internal/config"
 	"github.com/sraj/addressbook/internal/mailer"
 	"github.com/sraj/addressbook/internal/shared"
-	"github.com/mobentum/xdb"
-	"github.com/samber/do/v2"
 )
 
 // Provide registers the auth service and handler into the injector.

@@ -1,10 +1,10 @@
 package interfaces
 
 import (
-	adminApp "github.com/sraj/addressbook/internal/admin/application"
-	billingApp "github.com/sraj/addressbook/internal/billing/application"
 	"github.com/mobentum/xdb"
 	"github.com/samber/do/v2"
+	adminApp "github.com/sraj/addressbook/internal/admin/application"
+	billingApp "github.com/sraj/addressbook/internal/billing/application"
 )
 
 // Provide registers the admin service and handler into the injector.

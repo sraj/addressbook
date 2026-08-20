@@ -86,7 +86,7 @@ func (m *Mailer) sendSendGrid(to, subject, body string) error {
 		"personalizations": []map[string]any{
 			{"to": []map[string]string{{"email": to}}},
 		},
-		"from": from,
+		"from":    from,
 		"subject": subject,
 		"content": []map[string]string{
 			{"type": "text/html", "value": body},

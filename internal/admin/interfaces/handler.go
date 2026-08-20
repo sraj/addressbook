@@ -5,14 +5,14 @@ import (
 	"net/http"
 	"strconv"
 
-	adminApp "github.com/sraj/addressbook/internal/admin/application"
 	"github.com/mobentum/kern"
+	adminApp "github.com/sraj/addressbook/internal/admin/application"
 	"github.com/sraj/addressbook/internal/shared"
 )
 
 type Handler struct {
-	svc    adminChecker
-	plans  planManager
+	svc   adminChecker
+	plans planManager
 }
 
 func NewHandler(svc adminChecker, plans planManager) *Handler {

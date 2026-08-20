@@ -5,8 +5,8 @@ import (
 	"errors"
 	"time"
 
-	authDomain "github.com/sraj/addressbook/internal/auth/domain"
 	"github.com/mobentum/xdb"
+	authDomain "github.com/sraj/addressbook/internal/auth/domain"
 	"golang.org/x/crypto/bcrypt"
 )
 
