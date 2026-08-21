@@ -60,7 +60,7 @@ web/                             # React SPA
 
 ## Dependency injection (samber/do)
 
-`internal/app` builds a `do.Injector` container. Each bounded context's
+`internal/api` builds a `do.Injector` container. Each bounded context's
 `interfaces/register.go` exposes a `Provide(i do.Injector)` function that
 registers its service + handler providers, so contexts wire their own deps
 instead of one central struct being edited by everyone.
@@ -130,7 +130,7 @@ teams never collide on version numbers or ordering:
 ┌─────────────────────────────────────────────────────────┐
 │                    cmd/server/main.go                   │
 ├─────────────────────────────────────────────────────────┤
-│  internal/app/app.go              ← composition root    │
+│  internal/api/api.go              ← composition root    │
 ├──────────────────────┬──────────────────────────────────┤
 │    internal/auth/    │   internal/features/contact/     │
 │  ┌────────────────┐  │ ┌────────────────────────────┐   │
@@ -159,7 +159,7 @@ Dependencies flow one way: `interfaces → application → infrastructure → DB
 Steps:
 1. Create the four layer dirs + `interfaces/register.go` with a `Provide(do.Injector)` that registers the service and handler.
 2. Add a `migrations/{sqlite,postgres}/payments/` dir with 000001+ migrations.
-3. Register the context in `internal/app/app.go`: add its `Provide` to `do.New(...)`, resolve the handler in `App`, and add it to `RegisterRoutes`.
+3. Register the context in `internal/api/api.go`: add its `Provide` to `do.New(...)`, resolve the handler in `RestAPI`, and add it to `RegisterRoutes`.
 4. Add a `Context` entry to `migrations/embed.go` (in dependency order).
 
 `cmd/server/main.go` does not change for a new context.

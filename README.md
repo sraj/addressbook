@@ -159,7 +159,7 @@ DDD-inspired hexagonal layout per bounded context (`domain/`, `application/`, `i
 ```
 cmd/server/        entrypoint — middleware stack + route registration
 cmd/admin/         admin CLI — migrate, seed, setup
-internal/app/      composition root
+internal/api/       composition root
 internal/auth/     identity, JWT, passwords
 internal/billing/  Stripe plans, subscriptions, webhooks
 internal/features/ contact | note | bookmark | collection | label

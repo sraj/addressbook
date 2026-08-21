@@ -1,4 +1,4 @@
-package app
+package api
 
 import (
 	"github.com/mobentum/kern"
@@ -18,7 +18,7 @@ import (
 	"github.com/sraj/addressbook/internal/shared"
 )
 
-type App struct {
+type RestAPI struct {
 	AuthHandler       *authIntf.Handler
 	ContactHandler    *contactIntf.Handler
 	NoteHandler       *noteIntf.Handler
@@ -33,7 +33,7 @@ type App struct {
 // New is the composition root. It builds a samber/do container where each
 // bounded context registers its own service + handler providers (see each
 // context's register.go), then resolves the handlers by type.
-func New(db *xdb.DB, cfg *config.Config) *App {
+func New(db *xdb.DB, cfg *config.Config) *RestAPI {
 	injector := do.New(
 		sharedInfra(db, cfg),
 		authIntf.Provide,
@@ -46,7 +46,7 @@ func New(db *xdb.DB, cfg *config.Config) *App {
 		adminIntf.Provide,
 	)
 
-	return &App{
+	return &RestAPI{
 		AuthHandler:       do.MustInvoke[*authIntf.Handler](injector),
 		ContactHandler:    do.MustInvoke[*contactIntf.Handler](injector),
 		NoteHandler:       do.MustInvoke[*noteIntf.Handler](injector),
@@ -93,7 +93,7 @@ func buildMailer(cfg *config.Config) *mailer.Mailer {
 // RegisterRoutes wires every bounded context's HTTP routes into the server.
 // This is the single place that lists contexts; adding a new context only
 // touches this method (plus New for wiring).
-func (a *App) RegisterRoutes(server *kern.App, jwtAuth kern.MiddlewareFunc, authRateLimit kern.MiddlewareFunc) {
+func (a *RestAPI) RegisterRoutes(server *kern.App, jwtAuth kern.MiddlewareFunc, authRateLimit kern.MiddlewareFunc) {
 	a.AuthHandler.RegisterRoutes(server, jwtAuth, authRateLimit)
 	a.ContactHandler.RegisterRoutes(server, jwtAuth)
 	a.NoteHandler.RegisterRoutes(server, jwtAuth)

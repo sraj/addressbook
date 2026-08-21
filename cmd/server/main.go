@@ -11,7 +11,7 @@ import (
 	"github.com/mobentum/kern/extensions/xotel"
 	"github.com/mobentum/kern/middleware"
 	"github.com/mobentum/xdb"
-	"github.com/sraj/addressbook/internal/app"
+	"github.com/sraj/addressbook/internal/api"
 	"github.com/sraj/addressbook/internal/config"
 	"github.com/sraj/addressbook/internal/shared"
 	"github.com/sraj/addressbook/migrations"
@@ -58,7 +58,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	application := app.New(db, cfg)
+	application := api.New(db, cfg)
 
 	server := initServer(slogger, cfg)
 	registerRoutes(cfg, server, db, application)
@@ -142,7 +142,7 @@ func initServer(slogger *slog.Logger, cfg *config.Config) *kern.App {
 }
 
 // registerRoutes keeps operational endpoints ahead of application routes.
-func registerRoutes(cfg *config.Config, server *kern.App, db *xdb.DB, application *app.App) {
+func registerRoutes(cfg *config.Config, server *kern.App, db *xdb.DB, application *api.RestAPI) {
 	// Initialize OTLP-related middleware or handlers here if needed.
 	registerOperationalRoutes(cfg, server, db)
 	registerApplicationRoutes(server, application)
@@ -171,7 +171,7 @@ func registerOperationalRoutes(cfg *config.Config, server *kern.App, db *xdb.DB)
 	}
 }
 
-func registerApplicationRoutes(server *kern.App, application *app.App) {
+func registerApplicationRoutes(server *kern.App, application *api.RestAPI) {
 	// Authentication routes get a stricter limit than the global request limit.
 	authRateLimit := middleware.RateLimiter(middleware.RateLimiterConfig{
 		Requests: 10,
