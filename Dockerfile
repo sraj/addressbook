@@ -1,5 +1,5 @@
 # ── Build stage ────────────────────────────────────────────
-FROM node:22-alpine AS frontend
+FROM node:22 AS frontend
 WORKDIR /web
 COPY web/package.json web/package-lock.json ./
 RUN npm ci
